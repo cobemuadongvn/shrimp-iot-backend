@@ -1,0 +1,8 @@
+{
+  "deviceId": "device_01",
+  "temperature": 30.5,
+  "ph": 7.2,
+  "ecValue": 1.1,
+  "salinity": 12.5,
+  "doValue": 5.8
+}

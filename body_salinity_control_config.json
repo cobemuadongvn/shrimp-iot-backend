@@ -1,0 +1,13 @@
+{
+  "salinityAutoEnabled": true,
+  "salinityHighThreshold": 35.0,
+  "salinityStopThreshold": 32.0,
+  "salinityDrainDurationSeconds": 20,
+  "freshwaterDurationSeconds": 25,
+  "mixingWaitSeconds": 120,
+  "maxRetryCount": 2,
+  "cooldownMinutes": 10,
+  "readingMaxAgeSeconds": 120,
+  "autoRemeasureEnabled": true,
+  "safetyLockEnabled": false
+}

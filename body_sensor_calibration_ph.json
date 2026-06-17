@@ -1,0 +1,9 @@
+{
+  "sensorType": "PH",
+  "offsetValue": 0.35,
+  "slopeValue": 1.02,
+  "calibrationPoint1": 6.86,
+  "calibrationPoint2": 9.18,
+  "note": "Hiệu chuẩn pH bằng dung dịch chuẩn 6.86 và 9.18",
+  "active": true
+}

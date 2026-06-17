@@ -1,0 +1,14 @@
+# Example ACL. Copy to aclfile and adjust usernames/topics.
+# backend_user can read all telemetry/status/ack and publish commands.
+user backend_user
+topic read shrimp-iot/devices/+/telemetry
+topic read shrimp-iot/devices/+/commands/ack
+topic read shrimp-iot/devices/+/status
+topic write shrimp-iot/devices/+/commands
+
+# device_01 can publish its own telemetry/status/ack and read its own commands.
+user device_01
+topic write shrimp-iot/devices/device_01/telemetry
+topic write shrimp-iot/devices/device_01/commands/ack
+topic write shrimp-iot/devices/device_01/status
+topic read shrimp-iot/devices/device_01/commands

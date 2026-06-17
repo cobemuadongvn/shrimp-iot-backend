@@ -1,0 +1,120 @@
+server:
+  address: 0.0.0.0
+  port: ${SERVER_PORT:8080}
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:shrimp_iot}
+    username: ${DB_USER:shrimp_user}
+    password: ${DB_PASSWORD:change_me_dev_password}
+
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: ${JPA_SHOW_SQL:false}
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  jackson:
+    time-zone: Asia/Ho_Chi_Minh
+
+iot:
+  api-key: ${IOT_API_KEY:MY_SECRET_KEY}
+
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173,http://192.168.1.89:3000,http://192.168.1.89:5173}
+
+threshold:
+  # QCVN 02-19:2014/BNNPTNT - Phụ lục 1, Bảng 1
+  # Chất lượng nước cấp vào ao nuôi và nước ao nuôi tôm Sú/tôm Chân trắng
+  temperature:
+    min: ${TEMP_MIN:18}
+    max: ${TEMP_MAX:33}
+  ph:
+    min: ${PH_MIN:7.0}
+    max: ${PH_MAX:9.0}
+  salinity:
+    min: ${SALINITY_MIN:5}
+    max: ${SALINITY_MAX:35}
+  dissolved-oxygen:
+    min: ${DO_MIN:3.5}
+
+ai:
+  # AI service is enabled by default for demo. Override by env if needed.
+  enabled: ${AI_ENABLED:true}
+  service-url: ${AI_SERVICE_URL:http://192.168.1.89:8001/predict}
+  timeout-ms: ${AI_TIMEOUT_MS:3000}
+
+auth:
+  token-expiration-hours: ${AUTH_TOKEN_EXPIRATION_HOURS:24}
+
+auto-control:
+  enabled: ${AUTO_CONTROL_ENABLED:false}
+  cooldown-seconds: ${AUTO_CONTROL_COOLDOWN_SECONDS:120}
+  relay:
+    measurement-inlet-pump: ${RELAY_MEASUREMENT_INLET_PUMP:1}
+    measurement-outlet-pump: ${RELAY_MEASUREMENT_OUTLET_PUMP:2}
+    pond-salty-water-drain-pump: ${RELAY_POND_SALTY_WATER_DRAIN_PUMP:3}
+    freshwater-inlet-pump: ${RELAY_FRESHWATER_INLET_PUMP:4}
+
+notification:
+  app-enabled: ${APP_NOTIFICATION_ENABLED:true}
+  sms-enabled: ${SMS_NOTIFICATION_ENABLED:false}
+  email-enabled: ${EMAIL_NOTIFICATION_ENABLED:false}
+  sms-webhook-url: ${SMS_WEBHOOK_URL:}
+  email-webhook-url: ${EMAIL_WEBHOOK_URL:}
+  default-sms-recipient: ${DEFAULT_SMS_RECIPIENT:}
+  default-email-recipient: ${DEFAULT_EMAIL_RECIPIENT:}
+  # Anti-spam: after sending one alert for the same OPEN alert, repeated bad readings are logged only.
+  # A reminder can be sent after the cooldown window. If the alert is resolved and becomes bad again,
+  # a new alert id is created, so the system can notify immediately.
+  anti-spam-enabled: ${NOTIFICATION_ANTI_SPAM_ENABLED:true}
+  cooldown-minutes: ${NOTIFICATION_COOLDOWN_MINUTES:30}
+
+report:
+  max-export-rows: ${REPORT_MAX_EXPORT_ROWS:5000}
+
+operation-mode:
+  default: ${OPERATION_MODE_DEFAULT:MANUAL}
+  manual-label: "Thủ công: chỉ cảnh báo, chủ ao tự bật/tắt bơm 3/4"
+  ai-auto-label: "Smart Auto: rule-based QCVN + AI hỗ trợ phân loại trạng thái nếu bật AI service"
+
+mqtt:
+  enabled: ${MQTT_ENABLED:true}
+
+  # Backend Spring Boot của bạn đang chạy trực tiếp trên Windows cùng máy với Mosquitto,
+  # nên backend kết nối broker bằng 127.0.0.1.
+  # Arduino vẫn phải dùng IP LAN: 192.168.1.89:1883
+  broker-url: ${MQTT_BROKER_URL:tcp://127.0.0.1:1883}
+
+  # Mosquitto dev config thường đang allow_anonymous true, nên để rỗng.
+  username: ${MQTT_USERNAME:}
+  password: ${MQTT_PASSWORD:}
+
+  backend-client-id: ${MQTT_BACKEND_CLIENT_ID:shrimp-iot-backend}
+  qos: ${MQTT_QOS:1}
+
+  telemetry-topic-pattern: ${MQTT_TELEMETRY_TOPIC_PATTERN:shrimp-iot/devices/+/telemetry}
+  ack-topic-pattern: ${MQTT_ACK_TOPIC_PATTERN:shrimp-iot/devices/+/commands/ack}
+  status-topic-pattern: ${MQTT_STATUS_TOPIC_PATTERN:shrimp-iot/devices/+/status}
+  command-topic-template: ${MQTT_COMMAND_TOPIC_TEMPLATE:shrimp-iot/devices/{deviceId}/commands}
+
+  command-retry-ms: ${MQTT_COMMAND_RETRY_MS:5000}
+
+command:
+  default-expiration-seconds: ${COMMAND_DEFAULT_EXPIRATION_SECONDS:60}
+
+# Device connectivity monitor. If an ACTIVE real device does not send telemetry/ACK/status within this window,
+# backend marks it OFFLINE and opens DEVICE_OFFLINE alert. MQTT Last Will OFFLINE creates the alert immediately.
+device:
+  offline:
+    seconds: ${DEVICE_OFFLINE_SECONDS:60}
+    check:
+      ms: ${DEVICE_OFFLINE_CHECK_MS:30000}
+
+seed:
+  demo-data:
+    enabled: ${SEED_DEMO_DATA_ENABLED:true}

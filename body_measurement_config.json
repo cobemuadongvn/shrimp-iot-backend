@@ -1,0 +1,6 @@
+{
+  "fillDurationSeconds": 20,
+  "stabilizingSeconds": 45,
+  "measurementDurationSeconds": 30,
+  "measurementDrainDurationSeconds": 20
+}

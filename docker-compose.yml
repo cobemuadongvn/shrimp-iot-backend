@@ -1,0 +1,51 @@
+name: shrimp-iot-backend
+services:
+  postgres:
+    image: postgres:16
+    container_name: shrimp-postgres
+    restart: "no"
+    environment:
+      POSTGRES_DB: ${DB_NAME:-shrimp_iot}
+      POSTGRES_USER: ${DB_USER:-shrimp_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change_me_dev_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - shrimp_pg_data:/var/lib/postgresql/data
+    networks:
+      - shrimp-iot-net
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: shrimp-pgadmin
+    restart: "no"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin123}
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - shrimp-iot-net
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: shrimp-mosquitto
+    restart: "no"
+    command: ["mosquitto", "-c", "/mosquitto/config/mosquitto.conf"]
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    networks:
+      - shrimp-iot-net
+
+volumes:
+  shrimp_pg_data:
+
+networks:
+  shrimp-iot-net:
+    driver: bridge
