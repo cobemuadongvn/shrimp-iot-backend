@@ -5,7 +5,7 @@
 ```powershell
 curl.exe -X POST "http://192.168.1.8:8080/api/auth/login" `
   -H "Content-Type: application/json" `
-  -d "{\"username\":\"admin\",\"password\":\"admin123\"}"
+  -d "{\"username\":\"admin\",\"password\":\"REPLACE_WITH_LOCAL_ADMIN_PASSWORD\"}"
 ```
 
 Copy token trả về.
@@ -58,7 +58,7 @@ curl.exe -X PATCH "http://192.168.1.8:8080/api/devices/device_01/salinity-contro
 ```powershell
 curl.exe -X POST "http://192.168.1.8:8080/api/readings" `
   -H "Content-Type: application/json" `
-  -H "X-API-Key: MY_SECRET_KEY" `
+  -H "X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY" `
   -d "{\"deviceId\":\"device_01\",\"temperature\":30.5,\"ph\":7.2,\"ecValue\":1.1,\"salinity\":38.5,\"doValue\":5.8}"
 ```
 
@@ -66,5 +66,5 @@ Sau đó kiểm tra pending command Arduino:
 
 ```powershell
 curl.exe -X GET "http://192.168.1.8:8080/api/commands/pending?deviceId=device_01" `
-  -H "X-API-Key: MY_SECRET_KEY"
+  -H "X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY"
 ```

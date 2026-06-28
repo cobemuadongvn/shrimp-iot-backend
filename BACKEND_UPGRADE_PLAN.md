@@ -11,7 +11,7 @@ Backend hiện đã có: quản lý ao/thiết bị/relay, phân quyền, đăng
    - Khi khóa user, token cũ bị thu hồi.
 
 1. **Device API key riêng từng thiết bị**
-   - Hiện tại Arduino dùng chung `MY_SECRET_KEY`.
+   - Hiện tại Arduino dùng chung `REPLACE_WITH_LOCAL_IOT_API_KEY`.
    - Nên thêm `apiKeyHash` vào bảng `devices` để mỗi thiết bị có khóa riêng.
 
 2. **Cấu hình relay an toàn**

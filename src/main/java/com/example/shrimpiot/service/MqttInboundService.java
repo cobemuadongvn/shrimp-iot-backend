@@ -3,6 +3,8 @@ package com.example.shrimpiot.service;
 import com.example.shrimpiot.dto.CommandAckRequest;
 import com.example.shrimpiot.dto.SensorReadingRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.mqtt.support.MqttHeaders;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Service;
 @Service
 @ConditionalOnProperty(name = "mqtt.enabled", havingValue = "true", matchIfMissing = true)
 public class MqttInboundService {
+    private static final Logger log = LoggerFactory.getLogger(MqttInboundService.class);
 
     private final ObjectMapper objectMapper;
     private final SensorReadingService sensorReadingService;
@@ -64,6 +67,7 @@ public class MqttInboundService {
         }
 
         sensorReadingService.saveReadingFromTrustedDevice(request);
+        log.info("MQTT telemetry saved and published to realtime channel: deviceId={}", request.getDeviceId());
     }
 
     private void handleCommandAck(String topic, String payload) throws Exception {

@@ -1,0 +1,161 @@
+{
+  "info": {
+    "name": "Shrimp IoT - Backend Device Provisioning v1",
+    "description": "Step 5 cloud claim/status contract. Sample credentials and claim codes are placeholders only.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "adminUsername", "value": "admin" },
+    { "key": "adminPassword", "value": "SET_LOCALLY_DO_NOT_COMMIT" },
+    { "key": "appUsername", "value": "user" },
+    { "key": "appPassword", "value": "SET_LOCALLY_DO_NOT_COMMIT" },
+    { "key": "adminToken", "value": "" },
+    { "key": "userToken", "value": "" },
+    { "key": "deviceId", "value": "device_01" },
+    { "key": "pondId", "value": "1" },
+    { "key": "claimCode", "value": "SET_BY_ISSUE_REQUEST" }
+  ],
+  "item": [
+    {
+      "name": "1. Login ADMIN",
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('Login ADMIN is 200', () => pm.response.to.have.status(200));",
+          "const body = pm.response.json();",
+          "if (body.data && body.data.token) pm.collectionVariables.set('adminToken', body.data.token);"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"username\": \"{{adminUsername}}\",\n  \"password\": \"{{adminPassword}}\"\n}" },
+        "url": "{{baseUrl}}/api/auth/login"
+      }
+    },
+    {
+      "name": "2. Login app user",
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('Login app user is 200', () => pm.response.to.have.status(200));",
+          "const body = pm.response.json();",
+          "if (body.data && body.data.token) pm.collectionVariables.set('userToken', body.data.token);"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"username\": \"{{appUsername}}\",\n  \"password\": \"{{appPassword}}\"\n}" },
+        "url": "{{baseUrl}}/api/auth/login"
+      }
+    },
+    {
+      "name": "3. ADMIN issue one-time claim code",
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('Claim code issue is 201', () => pm.response.to.have.status(201));",
+          "const body = pm.response.json();",
+          "if (body.data && body.data.claimCode) pm.collectionVariables.set('claimCode', body.data.claimCode);"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"expiresInMinutes\": 60\n}" },
+        "url": "{{baseUrl}}/api/device-provisioning/devices/{{deviceId}}/claim-code"
+      }
+    },
+    {
+      "name": "4. Reject invalid claim code",
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('Invalid code is 422', () => pm.response.to.have.status(422));",
+          "pm.test('Stable error code', () => pm.expect(pm.response.json().data.code).to.eql('INVALID_CLAIM_CODE'));"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{userToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"version\": 1,\n  \"deviceId\": \"{{deviceId}}\",\n  \"claimCode\": \"WRONG-CLAIM-CODE-0000000000\",\n  \"pondId\": {{pondId}}\n}" },
+        "url": "{{baseUrl}}/api/device-provisioning/claims"
+      }
+    },
+    {
+      "name": "5. Claim device",
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('Claim is 201', () => pm.response.to.have.status(201));",
+          "pm.test('Device is CLAIMED', () => pm.expect(pm.response.json().data.claimStatus).to.eql('CLAIMED'));"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{userToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"version\": 1,\n  \"deviceId\": \"{{deviceId}}\",\n  \"claimCode\": \"{{claimCode}}\",\n  \"pondId\": {{pondId}}\n}" },
+        "url": "{{baseUrl}}/api/device-provisioning/claims"
+      }
+    },
+    {
+      "name": "6. Retry same claim (idempotent)",
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('Same owner retry is 201', () => pm.response.to.have.status(201));",
+          "pm.test('Still CLAIMED', () => pm.expect(pm.response.json().data.claimStatus).to.eql('CLAIMED'));"
+        ] }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{userToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"version\": 1,\n  \"deviceId\": \"{{deviceId}}\",\n  \"claimCode\": \"{{claimCode}}\",\n  \"pondId\": {{pondId}}\n}" },
+        "url": "{{baseUrl}}/api/device-provisioning/claims"
+      }
+    },
+    {
+      "name": "7. Get cloud provisioning status",
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('Status is 200', () => pm.response.to.have.status(200));",
+          "pm.test('Claim status is present', () => pm.expect(pm.response.json().data.claimStatus).to.be.a('string'));"
+        ] }
+      }],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{userToken}}" }],
+        "url": "{{baseUrl}}/api/device-provisioning/devices/{{deviceId}}/status"
+      }
+    },
+    {
+      "name": "8. Status without token returns 401",
+      "event": [{
+        "listen": "test",
+        "script": { "exec": [
+          "pm.test('Unauthorized is 401', () => pm.response.to.have.status(401));",
+          "pm.test('Stable error code', () => pm.expect(pm.response.json().data.code).to.eql('UNAUTHORIZED'));"
+        ] }
+      }],
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/device-provisioning/devices/{{deviceId}}/status"
+      }
+    }
+  ]
+}

@@ -6,21 +6,21 @@
 ```bash
 curl.exe -X POST http://localhost:8080/api/auth/login ^
   -H "Content-Type: application/json" ^
-  -d "{\"username\":\"admin\",\"password\":\"admin123\"}"
+  -d "{\"username\":\"admin\",\"password\":\"REPLACE_WITH_LOCAL_ADMIN_PASSWORD\"}"
 ```
 
 ### USER - Chủ ao / khách hàng
 ```bash
 curl.exe -X POST http://localhost:8080/api/auth/login ^
   -H "Content-Type: application/json" ^
-  -d "{\"username\":\"user\",\"password\":\"user123\"}"
+  -d "{\"username\":\"user\",\"password\":\"REPLACE_WITH_LOCAL_USER_PASSWORD\"}"
 ```
 
 ### TECHNICIAN
 ```bash
 curl.exe -X POST http://localhost:8080/api/auth/login ^
   -H "Content-Type: application/json" ^
-  -d "{\"username\":\"tech\",\"password\":\"tech123\"}"
+  -d "{\"username\":\"tech\",\"password\":\"REPLACE_WITH_LOCAL_TECH_PASSWORD\"}"
 ```
 
 Lấy `data.token` trong response.
@@ -46,6 +46,6 @@ curl.exe -X POST http://localhost:8080/api/commands ^
 ```bash
 curl.exe -X POST http://localhost:8080/api/readings ^
   -H "Content-Type: application/json" ^
-  -H "X-API-Key: MY_SECRET_KEY" ^
+  -H "X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY" ^
   -d "{\"deviceId\":\"device_01\",\"temperature\":28.5,\"ph\":7.2,\"ecValue\":1.8,\"salinity\":12.8,\"doValue\":5.6}"
 ```

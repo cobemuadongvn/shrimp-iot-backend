@@ -5,7 +5,7 @@
 ```powershell
 curl.exe -X POST "http://192.168.1.8:8080/api/auth/login" ^
   -H "Content-Type: application/json" ^
-  -d "{\"username\":\"admin\",\"password\":\"admin123\"}"
+  -d "{\"username\":\"admin\",\"password\":\"REPLACE_WITH_LOCAL_ADMIN_PASSWORD\"}"
 ```
 
 Copy `data.token` vào biến:

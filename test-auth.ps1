@@ -16,11 +16,11 @@ curl.exe -s "$BASE/api/health"
 
 # TEST 2 — Arduino POST readings
 Sep "TEST 2: Arduino POST /api/readings (X-API-Key)"
-curl.exe -s -X POST "$BASE/api/readings" -H "Content-Type: application/json" -H "X-API-Key: MY_SECRET_KEY" --data "@d:\shrimp-iot-complete-work\body_reading.json"
+curl.exe -s -X POST "$BASE/api/readings" -H "Content-Type: application/json" -H "X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY" --data "@d:\shrimp-iot-complete-work\body_reading.json"
 
 # TEST 3 — Arduino GET pending commands
 Sep "TEST 3: Arduino GET /api/commands/pending (X-API-Key)"
-curl.exe -s "$BASE/api/commands/pending?deviceId=device_01" -H "X-API-Key: MY_SECRET_KEY"
+curl.exe -s "$BASE/api/commands/pending?deviceId=device_01" -H "X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY"
 
 # TEST 4 — Login 3 accounts
 Sep "TEST 4a: Login admin"

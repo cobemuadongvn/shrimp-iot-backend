@@ -1,7 +1,6 @@
 package com.example.shrimpiot.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonAlias;
 
 public class SensorReadingRequest {
@@ -10,17 +9,14 @@ public class SensorReadingRequest {
     @JsonAlias({"device_id", "node_code"})
     private String deviceId;
 
-    @NotNull(message = "temperature is required")
     @JsonAlias({"temp", "water_temperature"})
     private Double temperature;
 
-    @NotNull(message = "ph is required")
     private Double ph;
 
     @JsonAlias({"ec_value", "ec"})
     private Double ecValue;
 
-    @NotNull(message = "salinity is required")
     private Double salinity;
 
     @JsonAlias({"do_value", "dissolved_oxygen", "do"})

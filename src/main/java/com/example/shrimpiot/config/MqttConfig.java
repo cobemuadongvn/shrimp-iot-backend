@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.ServiceActivator;
 import org.springframework.integration.channel.DirectChannel;
-import org.springframework.integration.channel.QueueChannel;
+import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.mqtt.core.DefaultMqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.integration.mqtt.outbound.MqttPahoMessageHandler;
@@ -18,26 +18,14 @@ import org.springframework.messaging.MessageHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
+@EnableIntegration
 @EnableConfigurationProperties(MqttProperties.class)
 @ConditionalOnProperty(name = "mqtt.enabled", havingValue = "true", matchIfMissing = true)
 public class MqttConfig {
 
     @Bean
     public DefaultMqttPahoClientFactory mqttClientFactory(MqttProperties props) {
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setServerURIs(new String[]{props.getBrokerUrl()});
-        options.setAutomaticReconnect(true);
-        options.setCleanSession(true);
-        options.setConnectionTimeout(10);
-        options.setKeepAliveInterval(30);
-
-        if (props.getUsername() != null && !props.getUsername().isBlank()) {
-            options.setUserName(props.getUsername());
-        }
-
-        if (props.getPassword() != null && !props.getPassword().isBlank()) {
-            options.setPassword(props.getPassword().toCharArray());
-        }
+        MqttConnectOptions options = MqttConnectionOptionsFactory.create(props, true);
 
         DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
         factory.setConnectionOptions(options);
@@ -51,7 +39,7 @@ public class MqttConfig {
 
     @Bean
     public MessageChannel mqttInboundChannel() {
-        return new QueueChannel();
+        return new DirectChannel();
     }
 
     @Bean

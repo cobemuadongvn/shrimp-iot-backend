@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>Database schema - Shrimp IoT</title>
+  <style>
+    body {
+      font-family: "Times New Roman", serif;
+      color: #111827;
+      line-height: 1.35;
+      margin: 28px;
+    }
+
+    h1 {
+      font-size: 18pt;
+      text-align: center;
+      margin: 0 0 18px;
+      color: #0f2f64;
+    }
+
+    h2 {
+      font-size: 13pt;
+      margin: 18px 0 8px;
+      color: #0f2f64;
+    }
+
+    p {
+      font-size: 11pt;
+      margin: 6px 0 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 16px;
+      page-break-inside: avoid;
+      font-size: 10.5pt;
+    }
+
+    th {
+      background: #eaf1fb;
+      color: #0f2f64;
+      font-weight: 700;
+      text-align: left;
+      border: 1px solid #2f4f75;
+      padding: 6px 8px;
+    }
+
+    td {
+      border: 1px solid #2f4f75;
+      padding: 5px 8px;
+      vertical-align: top;
+    }
+
+    .table-name {
+      background: #f5f8fc;
+      color: #0f2f64;
+      font-weight: 700;
+      text-align: center;
+      font-size: 12pt;
+    }
+
+    .key {
+      font-weight: 700;
+      color: #8a5a00;
+    }
+
+    .note {
+      color: #374151;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lược đồ cơ sở dữ liệu hệ thống Shrimp IoT</h1>
+
+  <p>
+    Ghi chú: Trong mã nguồn hiện tại, bảng <b>devices</b> có khóa chính kỹ thuật là
+    <b>id</b>, còn <b>device_id</b> là mã thiết bị duy nhất và được dùng để liên kết
+    nghiệp vụ với telemetry, cảnh báo, lệnh điều khiển và trạng thái relay.
+  </p>
+
+  <h2>1. Bảng ponds</h2>
+  <table>
+    <tr><th colspan="4" class="table-name">ponds</th></tr>
+    <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Khóa</th><th>Mô tả</th></tr>
+    <tr><td>id</td><td>BIGINT</td><td class="key">PK</td><td>Khóa chính ao nuôi</td></tr>
+    <tr><td>name</td><td>VARCHAR(150)</td><td></td><td>Tên ao nuôi</td></tr>
+    <tr><td>location</td><td>VARCHAR(255)</td><td></td><td>Vị trí ao</td></tr>
+    <tr><td>area_square_meters</td><td>DOUBLE PRECISION</td><td></td><td>Diện tích ao</td></tr>
+    <tr><td>species_type</td><td>VARCHAR(100)</td><td></td><td>Loài nuôi</td></tr>
+    <tr><td>pond_type</td><td>VARCHAR(100)</td><td></td><td>Loại ao</td></tr>
+    <tr><td>water_volume_cubic_meters</td><td>DOUBLE PRECISION</td><td></td><td>Thể tích nước</td></tr>
+    <tr><td>region</td><td>VARCHAR(100)</td><td></td><td>Khu vực</td></tr>
+    <tr><td>status</td><td>VARCHAR(30)</td><td></td><td>ACTIVE/INACTIVE</td></tr>
+    <tr><td>latitude</td><td>DOUBLE PRECISION</td><td></td><td>Vĩ độ</td></tr>
+    <tr><td>longitude</td><td>DOUBLE PRECISION</td><td></td><td>Kinh độ</td></tr>
+    <tr><td>description</td><td>VARCHAR(500)</td><td></td><td>Mô tả ao</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td></td><td>Thời điểm tạo</td></tr>
+  </table>
+
+  <h2>2. Bảng devices</h2>
+  <table>
+    <tr><th colspan="4" class="table-name">devices</th></tr>
+    <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Khóa</th><th>Mô tả</th></tr>
+    <tr><td>id</td><td>BIGINT</td><td class="key">PK</td><td>Khóa chính kỹ thuật</td></tr>
+    <tr><td>device_id</td><td>VARCHAR(100)</td><td class="key">UNIQUE</td><td>Mã thiết bị nghiệp vụ</td></tr>
+    <tr><td>name</td><td>VARCHAR(150)</td><td></td><td>Tên thiết bị</td></tr>
+    <tr><td>pond_id</td><td>BIGINT</td><td class="key">FK</td><td>Tham chiếu ponds(id)</td></tr>
+    <tr><td>status</td><td>VARCHAR(30)</td><td></td><td>ACTIVE/INACTIVE</td></tr>
+    <tr><td>connection_status</td><td>VARCHAR(30)</td><td></td><td>ONLINE/OFFLINE</td></tr>
+    <tr><td>last_seen_at</td><td>TIMESTAMP</td><td></td><td>Lần cuối backend nhận telemetry/ACK/status</td></tr>
+    <tr><td>latitude</td><td>DOUBLE PRECISION</td><td></td><td>Vĩ độ thiết bị</td></tr>
+    <tr><td>longitude</td><td>DOUBLE PRECISION</td><td></td><td>Kinh độ thiết bị</td></tr>
+    <tr><td>installation_position</td><td>VARCHAR(255)</td><td></td><td>Vị trí lắp đặt</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td></td><td>Thời điểm tạo</td></tr>
+  </table>
+
+  <h2>3. Bảng sensor_readings</h2>
+  <table>
+    <tr><th colspan="4" class="table-name">sensor_readings</th></tr>
+    <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Khóa</th><th>Mô tả</th></tr>
+    <tr><td>id</td><td>BIGINT</td><td class="key">PK</td><td>Khóa chính bản ghi đo</td></tr>
+    <tr><td>device_id</td><td>VARCHAR(100)</td><td class="key">FK logic</td><td>Tham chiếu devices(device_id)</td></tr>
+    <tr><td>temperature</td><td>DOUBLE PRECISION</td><td></td><td>Nhiệt độ nước</td></tr>
+    <tr><td>ph</td><td>DOUBLE PRECISION</td><td></td><td>Giá trị pH</td></tr>
+    <tr><td>ec_value</td><td>DOUBLE PRECISION</td><td></td><td>Giá trị EC</td></tr>
+    <tr><td>salinity</td><td>DOUBLE PRECISION</td><td></td><td>Độ mặn</td></tr>
+    <tr><td>do_value</td><td>DOUBLE PRECISION</td><td></td><td>Oxy hòa tan</td></tr>
+    <tr><td>status</td><td>VARCHAR(20)</td><td></td><td>NORMAL/WARNING/DANGER</td></tr>
+    <tr><td>message</td><td>VARCHAR(500)</td><td></td><td>Thông báo đánh giá</td></tr>
+    <tr><td>rule_status</td><td>VARCHAR(20)</td><td></td><td>Kết quả đánh giá theo luật QCVN</td></tr>
+    <tr><td>anomaly_status</td><td>VARCHAR(20)</td><td></td><td>Kết quả phát hiện bất thường</td></tr>
+    <tr><td>ml_status</td><td>VARCHAR(20)</td><td></td><td>Kết quả mô hình ML</td></tr>
+    <tr><td>final_status</td><td>VARCHAR(20)</td><td></td><td>Trạng thái cuối cùng</td></tr>
+    <tr><td>ai_message</td><td>VARCHAR(500)</td><td></td><td>Thông điệp từ AI service</td></tr>
+    <tr><td>recommended_action</td><td>VARCHAR(500)</td><td></td><td>Khuyến nghị xử lý</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td></td><td>Thời điểm lưu dữ liệu</td></tr>
+  </table>
+
+  <h2>4. Bảng alerts</h2>
+  <table>
+    <tr><th colspan="4" class="table-name">alerts</th></tr>
+    <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Khóa</th><th>Mô tả</th></tr>
+    <tr><td>id</td><td>BIGINT</td><td class="key">PK</td><td>Khóa chính cảnh báo</td></tr>
+    <tr><td>device_id</td><td>VARCHAR(100)</td><td class="key">FK logic</td><td>Tham chiếu devices(device_id)</td></tr>
+    <tr><td>alert_type</td><td>VARCHAR(50)</td><td></td><td>Loại cảnh báo, ví dụ DEVICE_OFFLINE</td></tr>
+    <tr><td>severity</td><td>VARCHAR(20)</td><td></td><td>Mức độ cảnh báo</td></tr>
+    <tr><td>status</td><td>VARCHAR(20)</td><td></td><td>OPEN/RESOLVED</td></tr>
+    <tr><td>message</td><td>VARCHAR(500)</td><td></td><td>Nội dung cảnh báo</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td></td><td>Thời điểm tạo cảnh báo</td></tr>
+    <tr><td>resolved_at</td><td>TIMESTAMP</td><td></td><td>Thời điểm xử lý</td></tr>
+    <tr><td>resolved_by</td><td>VARCHAR(100)</td><td></td><td>Người/hệ thống xử lý</td></tr>
+  </table>
+
+  <h2>5. Bảng device_commands</h2>
+  <table>
+    <tr><th colspan="4" class="table-name">device_commands</th></tr>
+    <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Khóa</th><th>Mô tả</th></tr>
+    <tr><td>id</td><td>BIGINT</td><td class="key">PK</td><td>Khóa chính lệnh điều khiển</td></tr>
+    <tr><td>device_id</td><td>VARCHAR(100)</td><td class="key">FK logic</td><td>Tham chiếu devices(device_id)</td></tr>
+    <tr><td>relay_no</td><td>INT</td><td></td><td>Số relay</td></tr>
+    <tr><td>action</td><td>VARCHAR(10)</td><td></td><td>ON/OFF</td></tr>
+    <tr><td>status</td><td>VARCHAR(20)</td><td></td><td>PENDING/SENT/ACK/FAILED/EXPIRED</td></tr>
+    <tr><td>source</td><td>VARCHAR(30)</td><td></td><td>MANUAL/AUTO</td></tr>
+    <tr><td>requested_by</td><td>VARCHAR(100)</td><td></td><td>Người hoặc hệ thống tạo lệnh</td></tr>
+    <tr><td>message</td><td>VARCHAR(500)</td><td></td><td>Thông điệp trạng thái lệnh</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td></td><td>Thời điểm tạo lệnh</td></tr>
+    <tr><td>sent_at</td><td>TIMESTAMP</td><td></td><td>Thời điểm gửi lệnh</td></tr>
+    <tr><td>ack_at</td><td>TIMESTAMP</td><td></td><td>Thời điểm thiết bị ACK</td></tr>
+    <tr><td>expires_at</td><td>TIMESTAMP</td><td></td><td>Thời điểm hết hiệu lực</td></tr>
+  </table>
+
+  <h2>6. Bảng relay_states</h2>
+  <table>
+    <tr><th colspan="4" class="table-name">relay_states</th></tr>
+    <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Khóa</th><th>Mô tả</th></tr>
+    <tr><td>id</td><td>BIGINT</td><td class="key">PK</td><td>Khóa chính trạng thái relay</td></tr>
+    <tr><td>device_id</td><td>VARCHAR(100)</td><td class="key">FK logic</td><td>Tham chiếu devices(device_id)</td></tr>
+    <tr><td>relay_no</td><td>INT</td><td class="key">UNIQUE cùng device_id</td><td>Số relay</td></tr>
+    <tr><td>relay_name</td><td>VARCHAR(255)</td><td></td><td>Tên relay</td></tr>
+    <tr><td>current_state</td><td>VARCHAR(10)</td><td></td><td>ON/OFF</td></tr>
+    <tr><td>last_command_id</td><td>BIGINT</td><td class="key">FK logic</td><td>Tham chiếu device_commands(id)</td></tr>
+    <tr><td>last_updated_at</td><td>TIMESTAMP</td><td></td><td>Lần cập nhật gần nhất</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td></td><td>Thời điểm tạo</td></tr>
+  </table>
+
+  <h2>7. Bảng users</h2>
+  <table>
+    <tr><th colspan="4" class="table-name">users</th></tr>
+    <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Khóa</th><th>Mô tả</th></tr>
+    <tr><td>id</td><td>BIGINT</td><td class="key">PK</td><td>Khóa chính người dùng</td></tr>
+    <tr><td>username</td><td>VARCHAR(100)</td><td class="key">UNIQUE</td><td>Tên đăng nhập</td></tr>
+    <tr><td>full_name</td><td>VARCHAR(150)</td><td></td><td>Họ tên</td></tr>
+    <tr><td>password_hash</td><td>VARCHAR(255)</td><td></td><td>Mật khẩu đã mã hóa</td></tr>
+    <tr><td>role</td><td>VARCHAR(30)</td><td></td><td>ADMIN/USER/TECHNICIAN</td></tr>
+    <tr><td>active</td><td>BOOLEAN</td><td></td><td>Trạng thái tài khoản</td></tr>
+    <tr><td>phone</td><td>VARCHAR(30)</td><td></td><td>Số điện thoại</td></tr>
+    <tr><td>email</td><td>VARCHAR(150)</td><td class="key">UNIQUE</td><td>Email</td></tr>
+    <tr><td>approval_status</td><td>VARCHAR(30)</td><td></td><td>PENDING/APPROVED/REJECTED</td></tr>
+    <tr><td>approved_by</td><td>VARCHAR(100)</td><td></td><td>Người duyệt</td></tr>
+    <tr><td>approved_at</td><td>TIMESTAMP</td><td></td><td>Thời điểm duyệt</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td></td><td>Thời điểm tạo</td></tr>
+  </table>
+
+  <h2>8. Bảng user_pond_access</h2>
+  <table>
+    <tr><th colspan="4" class="table-name">user_pond_access</th></tr>
+    <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Khóa</th><th>Mô tả</th></tr>
+    <tr><td>id</td><td>BIGINT</td><td class="key">PK</td><td>Khóa chính phân quyền</td></tr>
+    <tr><td>user_id</td><td>BIGINT</td><td class="key">FK</td><td>Tham chiếu users(id)</td></tr>
+    <tr><td>pond_id</td><td>BIGINT</td><td class="key">FK</td><td>Tham chiếu ponds(id)</td></tr>
+    <tr><td>access_type</td><td>VARCHAR(30)</td><td></td><td>READ_ONLY/READ_WRITE/OWNER/CONTROL</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td></td><td>Thời điểm cấp quyền</td></tr>
+    <tr><td colspan="4" class="note">Ràng buộc duy nhất: user_id + pond_id.</td></tr>
+  </table>
+
+  <h2>9. Bảng device_sensors</h2>
+  <table>
+    <tr><th colspan="4" class="table-name">device_sensors</th></tr>
+    <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Khóa</th><th>Mô tả</th></tr>
+    <tr><td>id</td><td>BIGINT</td><td class="key">PK</td><td>Khóa chính cảm biến</td></tr>
+    <tr><td>device_id</td><td>BIGINT</td><td class="key">FK</td><td>Tham chiếu devices(id)</td></tr>
+    <tr><td>sensor_type</td><td>VARCHAR(50)</td><td class="key">UNIQUE cùng device_id</td><td>TEMPERATURE/PH/EC/SALINITY/DO</td></tr>
+    <tr><td>name</td><td>VARCHAR(150)</td><td></td><td>Tên cảm biến</td></tr>
+    <tr><td>pin</td><td>VARCHAR(30)</td><td></td><td>Chân kết nối</td></tr>
+    <tr><td>min_threshold</td><td>DOUBLE PRECISION</td><td></td><td>Ngưỡng dưới</td></tr>
+    <tr><td>max_threshold</td><td>DOUBLE PRECISION</td><td></td><td>Ngưỡng trên</td></tr>
+    <tr><td>status</td><td>VARCHAR(30)</td><td></td><td>ACTIVE/INACTIVE</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td></td><td>Thời điểm tạo</td></tr>
+  </table>
+
+  <h2>10. Bảng device_relays</h2>
+  <table>
+    <tr><th colspan="4" class="table-name">device_relays</th></tr>
+    <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Khóa</th><th>Mô tả</th></tr>
+    <tr><td>id</td><td>BIGINT</td><td class="key">PK</td><td>Khóa chính relay</td></tr>
+    <tr><td>device_id</td><td>BIGINT</td><td class="key">FK</td><td>Tham chiếu devices(id)</td></tr>
+    <tr><td>relay_no</td><td>INT</td><td class="key">UNIQUE cùng device_id</td><td>Số relay</td></tr>
+    <tr><td>name</td><td>VARCHAR(150)</td><td></td><td>Tên relay</td></tr>
+    <tr><td>relay_type</td><td>VARCHAR(50)</td><td></td><td>Loại relay</td></tr>
+    <tr><td>pin</td><td>INT</td><td></td><td>Chân điều khiển</td></tr>
+    <tr><td>status</td><td>VARCHAR(30)</td><td></td><td>ON/OFF/UNKNOWN</td></tr>
+    <tr><td>locked</td><td>BOOLEAN</td><td></td><td>Cờ khóa relay</td></tr>
+    <tr><td>locked_by</td><td>VARCHAR(100)</td><td></td><td>Người khóa</td></tr>
+    <tr><td>locked_at</td><td>TIMESTAMP</td><td></td><td>Thời điểm khóa</td></tr>
+    <tr><td>created_at</td><td>TIMESTAMP</td><td></td><td>Thời điểm tạo</td></tr>
+  </table>
+
+  <h2>11. Bảng device_latest_states</h2>
+  <table>
+    <tr><th colspan="4" class="table-name">device_latest_states</th></tr>
+    <tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Khóa</th><th>Mô tả</th></tr>
+    <tr><td>device_id</td><td>VARCHAR(100)</td><td class="key">PK, FK logic</td><td>Tham chiếu devices(device_id)</td></tr>
+    <tr><td>latest_reading_id</td><td>BIGINT</td><td class="key">FK logic</td><td>Bản ghi sensor_readings mới nhất</td></tr>
+    <tr><td>temperature</td><td>DOUBLE PRECISION</td><td></td><td>Nhiệt độ mới nhất</td></tr>
+    <tr><td>ph</td><td>DOUBLE PRECISION</td><td></td><td>pH mới nhất</td></tr>
+    <tr><td>ec_value</td><td>DOUBLE PRECISION</td><td></td><td>EC mới nhất</td></tr>
+    <tr><td>salinity</td><td>DOUBLE PRECISION</td><td></td><td>Độ mặn mới nhất</td></tr>
+    <tr><td>do_value</td><td>DOUBLE PRECISION</td><td></td><td>DO mới nhất</td></tr>
+    <tr><td>status</td><td>VARCHAR(20)</td><td></td><td>Trạng thái tổng hợp mới nhất</td></tr>
+    <tr><td>message</td><td>VARCHAR(500)</td><td></td><td>Thông báo mới nhất</td></tr>
+    <tr><td>rule_status</td><td>VARCHAR(20)</td><td></td><td>Trạng thái luật mới nhất</td></tr>
+    <tr><td>anomaly_status</td><td>VARCHAR(20)</td><td></td><td>Trạng thái bất thường mới nhất</td></tr>
+    <tr><td>ml_status</td><td>VARCHAR(20)</td><td></td><td>Trạng thái ML mới nhất</td></tr>
+    <tr><td>final_status</td><td>VARCHAR(20)</td><td></td><td>Trạng thái cuối cùng mới nhất</td></tr>
+    <tr><td>ai_message</td><td>VARCHAR(500)</td><td></td><td>Thông điệp AI mới nhất</td></tr>
+    <tr><td>recommended_action</td><td>VARCHAR(500)</td><td></td><td>Khuyến nghị mới nhất</td></tr>
+    <tr><td>updated_at</td><td>TIMESTAMP</td><td></td><td>Thời điểm cập nhật</td></tr>
+  </table>
+
+  <h2>12. Quan hệ chính giữa các bảng</h2>
+  <table>
+    <tr><th>Bảng cha</th><th>Quan hệ</th><th>Bảng con</th><th>Khóa liên kết</th></tr>
+    <tr><td>ponds</td><td>1 - N</td><td>devices</td><td>devices.pond_id -> ponds.id</td></tr>
+    <tr><td>users</td><td>1 - N</td><td>user_pond_access</td><td>user_pond_access.user_id -> users.id</td></tr>
+    <tr><td>ponds</td><td>1 - N</td><td>user_pond_access</td><td>user_pond_access.pond_id -> ponds.id</td></tr>
+    <tr><td>devices</td><td>1 - N</td><td>device_sensors</td><td>device_sensors.device_id -> devices.id</td></tr>
+    <tr><td>devices</td><td>1 - N</td><td>device_relays</td><td>device_relays.device_id -> devices.id</td></tr>
+    <tr><td>devices</td><td>1 - N</td><td>sensor_readings</td><td>sensor_readings.device_id -> devices.device_id</td></tr>
+    <tr><td>devices</td><td>1 - N</td><td>alerts</td><td>alerts.device_id -> devices.device_id</td></tr>
+    <tr><td>devices</td><td>1 - N</td><td>device_commands</td><td>device_commands.device_id -> devices.device_id</td></tr>
+    <tr><td>devices</td><td>1 - N</td><td>relay_states</td><td>relay_states.device_id -> devices.device_id</td></tr>
+    <tr><td>device_commands</td><td>1 - N</td><td>relay_states</td><td>relay_states.last_command_id -> device_commands.id</td></tr>
+    <tr><td>sensor_readings</td><td>1 - 1</td><td>device_latest_states</td><td>device_latest_states.latest_reading_id -> sensor_readings.id</td></tr>
+  </table>
+</body>
+</html>

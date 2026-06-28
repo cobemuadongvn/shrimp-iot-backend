@@ -25,7 +25,7 @@ Content-Type: application/json
 Arduino dùng API key, không dùng token user:
 
 ```http
-X-API-Key: MY_SECRET_KEY
+X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY
 Content-Type: application/json
 ```
 
@@ -71,7 +71,7 @@ Body:
 ```json
 {
   "username": "admin",
-  "password": "admin123"
+  "password": "REPLACE_WITH_LOCAL_ADMIN_PASSWORD"
 }
 ```
 
@@ -96,10 +96,10 @@ Response cần lưu:
 Tài khoản seed mặc định:
 
 ```text
-admin / admin123        role ADMIN
-user  / user123         role USER
-user2 / user123         role USER
-tech  / tech123         role TECHNICIAN
+admin / REPLACE_WITH_LOCAL_ADMIN_PASSWORD        role ADMIN
+user  / REPLACE_WITH_LOCAL_USER_PASSWORD         role USER
+user2 / REPLACE_WITH_LOCAL_USER_PASSWORD         role USER
+tech  / REPLACE_WITH_LOCAL_TECH_PASSWORD         role TECHNICIAN
 ```
 
 ### Register
@@ -155,7 +155,7 @@ Body:
 
 ```json
 {
-  "oldPassword": "user123",
+  "oldPassword": "REPLACE_WITH_LOCAL_USER_PASSWORD",
   "newPassword": "12345678"
 }
 ```
@@ -500,7 +500,7 @@ USER: không được cập nhật/kích hoạt/vô hiệu hóa thiết bị.
 
 ```http
 POST /api/readings
-X-API-Key: MY_SECRET_KEY
+X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY
 Content-Type: application/json
 ```
 
@@ -593,7 +593,7 @@ relayNo 4 = Đèn/dự phòng
 
 ```http
 GET /api/commands/pending?deviceId=device_01
-X-API-Key: MY_SECRET_KEY
+X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY
 ```
 
 Web/App **không gọi API này**.
@@ -602,7 +602,7 @@ Web/App **không gọi API này**.
 
 ```http
 POST /api/commands/{id}/ack
-X-API-Key: MY_SECRET_KEY
+X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY
 ```
 
 Body:

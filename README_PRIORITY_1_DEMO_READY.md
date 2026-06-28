@@ -64,10 +64,10 @@ Backend health
 Backend có `DataInitializer`, tự tạo dữ liệu seed khi chạy lần đầu:
 
 ```text
-admin / admin123
-user  / user123
-user2 / user123
-tech  / tech123
+admin / REPLACE_WITH_LOCAL_ADMIN_PASSWORD
+user  / REPLACE_WITH_LOCAL_USER_PASSWORD
+user2 / REPLACE_WITH_LOCAL_USER_PASSWORD
+tech  / REPLACE_WITH_LOCAL_TECH_PASSWORD
 
 Ao tôm thẻ 01 → device_01
 Ao tôm thẻ 02 → device_02

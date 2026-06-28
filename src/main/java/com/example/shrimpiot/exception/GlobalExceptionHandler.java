@@ -13,6 +13,13 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(DeviceProvisioningException.class)
+    public ResponseEntity<ApiResponse<Map<String, String>>> handleDeviceProvisioning(DeviceProvisioningException ex) {
+        return ResponseEntity
+                .status(ex.getStatus())
+                .body(new ApiResponse<>(false, ex.getMessage(), Map.of("code", ex.getCode())));
+    }
+
     @ExceptionHandler(SecurityException.class)
     public ResponseEntity<ApiResponse<Object>> handleSecurity(SecurityException ex) {
         return ResponseEntity

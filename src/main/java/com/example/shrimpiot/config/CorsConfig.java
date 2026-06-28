@@ -25,7 +25,7 @@ public class CorsConfig {
                         .toArray(String[]::new);
 
                 registry.addMapping("/api/**")
-                        .allowedOrigins(origins)
+                        .allowedOriginPatterns(origins)
                         .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .exposedHeaders("Authorization", "Content-Disposition")

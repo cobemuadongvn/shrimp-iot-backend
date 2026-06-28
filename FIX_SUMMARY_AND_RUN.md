@@ -58,14 +58,14 @@ Nếu cần kiểm tra MQTT:
 
 ```powershell
 Test-NetConnection localhost -Port 1883
-Test-NetConnection 192.168.1.89 -Port 1883
+Test-NetConnection 175.16.16.108 -Port 1883
 ```
 
 ## API base URL
 
 Dùng trong Postman/Web/App:
 
-`http://192.168.1.89:8080`
+`http://175.16.16.108:8080`
 
 Backend tự kết nối MQTT broker bằng:
 
@@ -73,4 +73,4 @@ Backend tự kết nối MQTT broker bằng:
 
 Arduino vẫn dùng MQTT host:
 
-`192.168.1.89`
+`175.16.16.108`

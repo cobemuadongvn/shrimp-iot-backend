@@ -6,7 +6,7 @@
 $login = Invoke-RestMethod -Method Post `
   -Uri "http://localhost:8080/api/auth/login" `
   -ContentType "application/json" `
-  -Body '{"username":"admin","password":"admin123"}'
+  -Body '{"username":"admin","password":"REPLACE_WITH_LOCAL_ADMIN_PASSWORD"}'
 $token = $login.token
 ```
 

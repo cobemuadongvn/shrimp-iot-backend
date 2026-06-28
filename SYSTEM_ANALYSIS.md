@@ -48,11 +48,11 @@ datasource:
 **Vị Trí**: `application.yml:23`
 ```yaml
 iot:
-  api-key: ${IOT_API_KEY:MY_SECRET_KEY}  # ❌ Default key là "MY_SECRET_KEY"
+  api-key: ${IOT_API_KEY:REPLACE_WITH_LOCAL_IOT_API_KEY}  # ❌ Default key là "REPLACE_WITH_LOCAL_IOT_API_KEY"
 ```
 
 **Vấn Đề**:
-- API key mặc định là placeholder `MY_SECRET_KEY`
+- API key mặc định là placeholder `REPLACE_WITH_LOCAL_IOT_API_KEY`
 - Nếu không set environment variable, hệ thống sẽ dùng key này
 - Dễ bị brute force hoặc social engineering
 
@@ -110,12 +110,12 @@ app:
     allowed-origins: 
       http://localhost:3000
       http://localhost:5173
-      http://192.168.1.89:3000
-      http://192.168.1.89:5173
+      http://175.16.16.108:3000
+      http://175.16.16.108:5173
 ```
 
 **Vấn Đề**:
-- Cho phép từ `192.168.1.89:*` - có thể từ kẻ xấu cùng mạng
+- Cho phép từ `175.16.16.108:*` - có thể từ kẻ xấu cùng mạng
 - Nên whitelist chặt chẽ, không allow localhost trong production
 - Không validate các origins này theo time hoặc context
 

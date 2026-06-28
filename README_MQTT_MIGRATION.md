@@ -9,8 +9,8 @@ Frontend/Web/App -> HTTP REST API -> Spring Boot Backend
 
 ## IP đã cấu hình
 
-- MQTT broker host: `192.168.1.89`
-- Backend HTTP fallback host trong Arduino: `192.168.1.89`
+- MQTT broker host: `175.16.16.108`
+- Backend HTTP fallback host trong Arduino: `175.16.16.108`
 - MQTT port: `1883`
 - Backend port: `8080`
 
@@ -99,7 +99,7 @@ ArduinoJson
 Telemetry giả lập:
 
 ```bash
-mosquitto_pub -h 192.168.1.89 -p 1883 \
+mosquitto_pub -h 175.16.16.108 -p 1883 \
   -t shrimp-iot/devices/device_01/telemetry \
   -m "{\"deviceId\":\"device_01\",\"temperature\":28.5,\"ph\":7.4,\"ecValue\":1.2,\"salinity\":12.5,\"doValue\":5.8}"
 ```
@@ -107,14 +107,14 @@ mosquitto_pub -h 192.168.1.89 -p 1883 \
 Nghe lệnh từ backend:
 
 ```bash
-mosquitto_sub -h 192.168.1.89 -p 1883 \
+mosquitto_sub -h 175.16.16.108 -p 1883 \
   -t shrimp-iot/devices/device_01/commands
 ```
 
 Giả lập ACK:
 
 ```bash
-mosquitto_pub -h 192.168.1.89 -p 1883 \
+mosquitto_pub -h 175.16.16.108 -p 1883 \
   -t shrimp-iot/devices/device_01/commands/ack \
   -m "{\"id\":1,\"success\":true,\"message\":\"Relay 3 turned ON\"}"
 ```

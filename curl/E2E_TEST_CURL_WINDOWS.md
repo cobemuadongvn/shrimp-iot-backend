@@ -13,7 +13,7 @@ curl.exe -i "http://192.168.1.8:8080/api/health"
 ```powershell
 curl.exe -i -X POST "http://192.168.1.8:8080/api/auth/login" ^
   -H "Content-Type: application/json" ^
-  -d "{\"username\":\"admin\",\"password\":\"admin123\"}"
+  -d "{\"username\":\"admin\",\"password\":\"REPLACE_WITH_LOCAL_ADMIN_PASSWORD\"}"
 ```
 
 ## 3. Arduino giả lập gửi dữ liệu sensor
@@ -21,7 +21,7 @@ curl.exe -i -X POST "http://192.168.1.8:8080/api/auth/login" ^
 ```powershell
 curl.exe -i -X POST "http://192.168.1.8:8080/api/readings" ^
   -H "Content-Type: application/json" ^
-  -H "X-API-Key: MY_SECRET_KEY" ^
+  -H "X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY" ^
   -d "{\"deviceId\":\"device_01\",\"temperature\":30.5,\"ph\":7.2,\"ecValue\":1.1,\"salinity\":12.5,\"doValue\":5.8}"
 ```
 
@@ -30,7 +30,7 @@ curl.exe -i -X POST "http://192.168.1.8:8080/api/readings" ^
 ```powershell
 curl.exe -i -X POST "http://192.168.1.8:8080/api/readings" ^
   -H "Content-Type: application/json" ^
-  -H "X-API-Key: MY_SECRET_KEY" ^
+  -H "X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY" ^
   -d "{\"deviceId\":\"device_01\",\"temperature\":32.5,\"ph\":4.5,\"ecValue\":0.9,\"salinity\":0.4,\"doValue\":2.8}"
 ```
 
@@ -54,7 +54,7 @@ curl.exe -i -X POST "http://192.168.1.8:8080/api/commands" ^
 
 ```powershell
 curl.exe -i "http://192.168.1.8:8080/api/commands/pending?deviceId=device_01" ^
-  -H "X-API-Key: MY_SECRET_KEY"
+  -H "X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY"
 ```
 
 ## 8. Arduino ACK command
@@ -64,7 +64,7 @@ Thay `<COMMAND_ID>` bằng id command lấy ở bước pending.
 ```powershell
 curl.exe -i -X POST "http://192.168.1.8:8080/api/commands/<COMMAND_ID>/ack" ^
   -H "Content-Type: application/json" ^
-  -H "X-API-Key: MY_SECRET_KEY" ^
+  -H "X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY" ^
   -d "{\"success\":true,\"message\":\"Relay 1 turned ON\"}"
 ```
 

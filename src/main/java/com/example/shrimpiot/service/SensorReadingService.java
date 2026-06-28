@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ import com.example.shrimpiot.repository.SensorReadingRepository;
 
 @Service
 public class SensorReadingService {
+    private static final Logger log = LoggerFactory.getLogger(SensorReadingService.class);
+
     private final SensorReadingRepository repository;
     private final ApiKeyService apiKeyService;
     private final AlertService alertService;
@@ -107,8 +111,11 @@ public class SensorReadingService {
         deviceLatestStateService.updateFromReading(saved);
         autoControlService.applyAutoControl(saved);
         salinityControlService.handleReading(saved);
-        // publish to websocket
-        try { webSocketEventService.publishSensorReading(new SensorReadingResponse(saved)); } catch (Exception ignored) {}
+        try {
+            webSocketEventService.publishSensorReading(new SensorReadingResponse(saved));
+        } catch (Exception ex) {
+            log.warn("Failed to publish realtime sensor reading for device {}", saved.getDeviceId(), ex);
+        }
         return new SensorReadingResponse(saved);
     }
 
@@ -132,9 +139,9 @@ public class SensorReadingService {
     public long countByStatus(String deviceId, ReadingStatus status) { return repository.countByDeviceIdAndStatus(deviceId, status); }
 
     private void validateSensorRange(SensorReadingRequest request) {
-        if (request.getTemperature() < -20 || request.getTemperature() > 80) throw new IllegalArgumentException("temperature out of physical range");
-        if (request.getPh() < 0 || request.getPh() > 14) throw new IllegalArgumentException("ph out of physical range");
-        if (request.getSalinity() < 0 || request.getSalinity() > 100) throw new IllegalArgumentException("salinity out of physical range");
+        if (request.getTemperature() != null && (request.getTemperature() < -20 || request.getTemperature() > 80)) throw new IllegalArgumentException("temperature out of physical range");
+        if (request.getPh() != null && (request.getPh() < 0 || request.getPh() > 14)) throw new IllegalArgumentException("ph out of physical range");
+        if (request.getSalinity() != null && (request.getSalinity() < 0 || request.getSalinity() > 100)) throw new IllegalArgumentException("salinity out of physical range");
         if (request.getEcValue() != null && request.getEcValue() < 0) throw new IllegalArgumentException("ecValue out of physical range");
         if (request.getDoValue() != null && (request.getDoValue() < 0 || request.getDoValue() > 30)) throw new IllegalArgumentException("doValue out of physical range");
     }
@@ -150,6 +157,7 @@ public class SensorReadingService {
      */
     private void applyRuleBasedStatusAndAlerts(SensorReading reading) {
         RuleEvaluation evaluation = new RuleEvaluation();
+        checkMissingSensors(reading, evaluation);
         checkTemperature(reading, evaluation);
         checkPh(reading, evaluation);
         checkSalinity(reading, evaluation);
@@ -159,7 +167,7 @@ public class SensorReadingService {
         if (evaluation.warningMessages.isEmpty()) {
             ruleStatus = ReadingStatus.NORMAL;
             reading.setMessage("Thông số môi trường đạt ngưỡng QCVN 02-19:2014/BNNPTNT");
-        } else if (evaluation.hasDanger || evaluation.warningMessages.size() >= 2) {
+        } else if (evaluation.hasDanger || evaluation.ruleWarningCount >= 2) {
             ruleStatus = ReadingStatus.DANGER;
             reading.setMessage(String.join("; ", evaluation.warningMessages));
         } else {
@@ -174,6 +182,14 @@ public class SensorReadingService {
         reading.setMlStatus("NOT_RUN");
         reading.setAiMessage("AI service disabled or unavailable; final status uses rule-based QCVN layer");
         reading.setRecommendedAction(buildRuleRecommendation(ruleStatus));
+    }
+
+    private void checkMissingSensors(SensorReading reading, RuleEvaluation evaluation) {
+        if (reading.getTemperature() == null) evaluation.addMissing("Không đọc được cảm biến nhiệt độ");
+        if (reading.getPh() == null) evaluation.addMissing("Không đọc được cảm biến pH");
+        if (reading.getEcValue() == null) evaluation.addMissing("Không đọc được cảm biến EC");
+        if (reading.getSalinity() == null) evaluation.addMissing("Không tính/đọc được độ mặn");
+        if (reading.getDoValue() == null) evaluation.addMissing("Không đọc được cảm biến oxy hòa tan DO");
     }
 
     private void applyAiPredictionIfAvailable(SensorReading reading) {
@@ -371,14 +387,20 @@ public class SensorReadingService {
     private static class RuleEvaluation {
         private final List<String> warningMessages = new ArrayList<>();
         private boolean hasDanger;
+        private int ruleWarningCount;
 
         private void addWarning(String message) {
             warningMessages.add(message);
+            ruleWarningCount++;
         }
 
         private void addDanger(String message) {
             warningMessages.add(message);
             hasDanger = true;
+        }
+
+        private void addMissing(String message) {
+            warningMessages.add(message);
         }
     }
 }

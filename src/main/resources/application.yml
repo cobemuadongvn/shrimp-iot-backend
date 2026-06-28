@@ -1,16 +1,30 @@
 server:
   address: 0.0.0.0
-  port: ${SERVER_PORT:8080}
+  # Render injects PORT. SERVER_PORT remains the local/backward-compatible fallback.
+  port: ${PORT:${SERVER_PORT:8080}}
 
 spring:
+  config:
+    import: optional:file:.env.local[.properties],optional:file:.env.device.local[.properties]
+
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:shrimp_iot}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:shrimp_iot}?sslmode=${DB_SSLMODE:disable}
     username: ${DB_USER:shrimp_user}
     password: ${DB_PASSWORD:change_me_dev_password}
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:5}
+      minimum-idle: ${DB_POOL_MIN_IDLE:1}
+
+  flyway:
+    enabled: ${FLYWAY_ENABLED:true}
+    locations: classpath:db/migration
+    baseline-on-migrate: ${FLYWAY_BASELINE_ON_MIGRATE:false}
+    baseline-version: 1
+    validate-migration-naming: true
 
   jpa:
     hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:update}
+      ddl-auto: ${JPA_DDL_AUTO:validate}
     show-sql: ${JPA_SHOW_SQL:false}
     open-in-view: false
     properties:
@@ -21,11 +35,12 @@ spring:
     time-zone: Asia/Ho_Chi_Minh
 
 iot:
-  api-key: ${IOT_API_KEY:MY_SECRET_KEY}
+  # Required for trusted device HTTP fallback. Keep the real value outside Git.
+  api-key: ${IOT_API_KEY:}
 
 app:
   cors:
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173,http://192.168.1.89:3000,http://192.168.1.89:5173}
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173,http://175.16.16.108:3000,http://175.16.16.108:5173,http://192.168.1.*:3000,http://192.168.1.*:5173}
 
 threshold:
   # QCVN 02-19:2014/BNNPTNT - Phụ lục 1, Bảng 1
@@ -45,11 +60,26 @@ threshold:
 ai:
   # AI service is enabled by default for demo. Override by env if needed.
   enabled: ${AI_ENABLED:true}
-  service-url: ${AI_SERVICE_URL:http://192.168.1.89:8001/predict}
+  service-url: ${AI_SERVICE_URL:http://175.16.16.108:8001/predict}
   timeout-ms: ${AI_TIMEOUT_MS:3000}
+
+openai:
+  api-key: ${OPENAI_API_KEY:}
+  chat:
+    # Optional LLM layer for /api/chat/message. Keep false to preserve the old rule-based assistant.
+    enabled: ${OPENAI_CHAT_ENABLED:false}
+    model: ${OPENAI_CHAT_MODEL:gpt-5.4-mini}
+    endpoint: ${OPENAI_CHAT_ENDPOINT:https://api.openai.com/v1/responses}
+    timeout-ms: ${OPENAI_CHAT_TIMEOUT_MS:8000}
+    max-output-tokens: ${OPENAI_CHAT_MAX_OUTPUT_TOKENS:700}
 
 auth:
   token-expiration-hours: ${AUTH_TOKEN_EXPIRATION_HOURS:24}
+
+provisioning:
+  claim:
+    # One-time QR claim code lifetime. ADMIN can override it per issued code.
+    default-expiration-minutes: ${PROVISIONING_CLAIM_EXPIRATION_MINUTES:1440}
 
 auto-control:
   enabled: ${AUTO_CONTROL_ENABLED:false}
@@ -87,12 +117,15 @@ mqtt:
 
   # Backend Spring Boot của bạn đang chạy trực tiếp trên Windows cùng máy với Mosquitto,
   # nên backend kết nối broker bằng 127.0.0.1.
-  # Arduino vẫn phải dùng IP LAN: 192.168.1.89:1883
+  # Arduino vẫn phải dùng IP LAN: 175.16.16.108:1883
   broker-url: ${MQTT_BROKER_URL:tcp://127.0.0.1:1883}
 
   # Mosquitto dev config thường đang allow_anonymous true, nên để rỗng.
   username: ${MQTT_USERNAME:}
   password: ${MQTT_PASSWORD:}
+  tls-required: ${MQTT_TLS_REQUIRED:false}
+  hostname-verification-enabled: ${MQTT_HOSTNAME_VERIFICATION_ENABLED:true}
+  credentials-required: ${MQTT_CREDENTIALS_REQUIRED:false}
 
   backend-client-id: ${MQTT_BACKEND_CLIENT_ID:shrimp-iot-backend}
   qos: ${MQTT_QOS:1}
@@ -117,4 +150,8 @@ device:
 
 seed:
   demo-data:
-    enabled: ${SEED_DEMO_DATA_ENABLED:true}
+    # Production-safe default. Local development can explicitly enable this in .env.local.
+    enabled: ${SEED_DEMO_DATA_ENABLED:false}
+    admin-password: ${SEED_ADMIN_PASSWORD:}
+    user-password: ${SEED_USER_PASSWORD:}
+    technician-password: ${SEED_TECH_PASSWORD:}

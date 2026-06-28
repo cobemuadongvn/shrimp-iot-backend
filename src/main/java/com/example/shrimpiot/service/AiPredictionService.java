@@ -58,6 +58,12 @@ public class AiPredictionService {
             return Optional.empty();
         }
 
+        if (hasMissingRequiredMetric(reading)) {
+            log.warn("AI prediction skipped because telemetry has missing sensor value: deviceId={}, readingId={}",
+                    reading.getDeviceId(), reading.getId());
+            return Optional.empty();
+        }
+
         try {
             // FastAPI /predict requires snake_case keys: ec_value and do_value.
             Map<String, Object> payload = new LinkedHashMap<>();
@@ -95,5 +101,13 @@ public class AiPredictionService {
             log.error("AI prediction failed. enabled={}, url={}, error={}", enabled, serviceUrl, ex.getMessage(), ex);
             return Optional.empty();
         }
+    }
+
+    private boolean hasMissingRequiredMetric(SensorReading reading) {
+        return reading.getTemperature() == null
+                || reading.getPh() == null
+                || reading.getEcValue() == null
+                || reading.getSalinity() == null
+                || reading.getDoValue() == null;
     }
 }

@@ -8,7 +8,7 @@
 
 2. `application.yml` yêu cầu biến môi trường `DB_PASSWORD` và `IOT_API_KEY` nhưng không có giá trị mặc định.
    - Nguyên nhân: khi chạy local nếu chưa set biến môi trường, Spring Boot có thể fail ở bước resolve placeholder.
-   - Cách sửa: thêm default local: `DB_PASSWORD=123456`, `IOT_API_KEY=MY_SECRET_KEY`.
+   - Cách sửa: thêm default local: `DB_PASSWORD=123456`, `IOT_API_KEY=REPLACE_WITH_LOCAL_IOT_API_KEY`.
 
 3. `spring.jpa.hibernate.ddl-auto` mặc định đang là `validate`.
    - Nguyên nhân: nếu database local chưa có đủ bảng, backend sẽ fail khi khởi động.

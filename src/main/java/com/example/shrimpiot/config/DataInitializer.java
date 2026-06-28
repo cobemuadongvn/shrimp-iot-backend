@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -23,8 +24,17 @@ import com.example.shrimpiot.repository.UserAccountRepository;
 import com.example.shrimpiot.repository.UserPondAccessRepository;
 
 @Component
-@ConditionalOnProperty(name = "seed.demo-data.enabled", havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(name = "seed.demo-data.enabled", havingValue = "true", matchIfMissing = false)
 public class DataInitializer implements CommandLineRunner {
+
+    @Value("${seed.demo-data.admin-password:}")
+    private String adminPassword;
+
+    @Value("${seed.demo-data.user-password:}")
+    private String userPassword;
+
+    @Value("${seed.demo-data.technician-password:}")
+    private String technicianPassword;
 
     private final UserAccountRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -54,11 +64,15 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        requireSeedPassword("SEED_ADMIN_PASSWORD", adminPassword);
+        requireSeedPassword("SEED_USER_PASSWORD", userPassword);
+        requireSeedPassword("SEED_TECH_PASSWORD", technicianPassword);
+
         // 1. Tạo các tài khoản người dùng
-        UserAccount admin = createIfMissing("admin", "Quản trị hệ thống", "admin123", RoleName.ADMIN);
-        UserAccount user1 = createIfMissing("user", "Chủ ao nuôi A", "user123", RoleName.USER);
-        UserAccount user2 = createIfMissing("user2", "Chủ ao nuôi B", "user123", RoleName.USER);
-        UserAccount tech = createIfMissing("tech", "Kỹ thuật viên", "tech123", RoleName.TECHNICIAN);
+        UserAccount admin = createIfMissing("admin", "Quản trị hệ thống", adminPassword, RoleName.ADMIN);
+        UserAccount user1 = createIfMissing("user", "Chủ ao nuôi A", userPassword, RoleName.USER);
+        UserAccount user2 = createIfMissing("user2", "Chủ ao nuôi B", userPassword, RoleName.USER);
+        UserAccount tech = createIfMissing("tech", "Kỹ thuật viên", technicianPassword, RoleName.TECHNICIAN);
 
         // 2. Tạo các Ao nuôi
         Pond pond1 = createPondIfMissing("Ao tôm thẻ 01", "Khu A - Bến Tre", 1000.0);
@@ -114,6 +128,14 @@ public class DataInitializer implements CommandLineRunner {
         createRelayIfMissing(dev3, 2, "Bơm xả nước khỏi buồng đo", "MEASUREMENT_OUTLET_PUMP", 3);
         createRelayIfMissing(dev3, 3, "Bơm xả nước ao khi độ mặn cao", "POND_SALTY_WATER_DRAIN_PUMP", 4);
         createRelayIfMissing(dev3, 4, "Bơm nước ngọt vào ao", "FRESHWATER_INLET_PUMP", 5);
+    }
+
+    private void requireSeedPassword(String environmentName, String password) {
+        if (password == null || password.isBlank()) {
+            throw new IllegalStateException(
+                    environmentName + " must be set when SEED_DEMO_DATA_ENABLED=true"
+            );
+        }
     }
 
     private UserAccount createIfMissing(String username, String fullName, String rawPassword, RoleName role) {

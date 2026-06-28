@@ -1,0 +1,239 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="1050" viewBox="0 0 1700 1050">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .table { fill: #fbfdff; stroke: #203f68; stroke-width: 2; }
+      .head { fill: #eef5ff; stroke: #203f68; stroke-width: 2; }
+      .title { font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 20px; fill: #0f2f64; }
+      .field { font-family: Arial, Helvetica, sans-serif; font-size: 15px; fill: #111827; }
+      .type { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fill: #111827; }
+      .key { fill: #f2a900; stroke: #805d00; stroke-width: 1.2; }
+      .keyText { font-family: Arial, Helvetica, sans-serif; font-weight: 700; font-size: 11px; fill: #ffffff; }
+      .pkfk { font-family: Arial, Helvetica, sans-serif; font-size: 13px; fill: #111827; font-weight: 700; }
+      .rel { fill: none; stroke: #111827; stroke-width: 2; }
+      .cardLabel { font-family: Arial, Helvetica, sans-serif; font-size: 17px; fill: #111827; font-weight: 700; }
+      .note { font-family: Arial, Helvetica, sans-serif; font-size: 14px; fill: #374151; }
+      .small { font-family: Arial, Helvetica, sans-serif; font-size: 12px; fill: #374151; }
+    </style>
+    <marker id="crow" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="12" markerHeight="12" orient="auto">
+      <path d="M 11 6 L 1 1 M 11 6 L 1 6 M 11 6 L 1 11" stroke="#111827" stroke-width="1.8" fill="none"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1700" height="1050"/>
+  <text x="850" y="40" text-anchor="middle" class="title" style="font-size:28px">SHRIMP IOT BACKEND - ENTITY RELATIONSHIP DIAGRAM</text>
+  <text x="850" y="66" text-anchor="middle" class="note">PK: Primary Key | FK: Foreign Key | 1-N relationships shown with crow-foot connectors</text>
+
+  <!-- ponds -->
+  <g id="ponds" transform="translate(50,100)">
+    <rect class="table" width="310" height="250" rx="8"/>
+    <rect class="head" width="310" height="42" rx="8"/>
+    <text x="155" y="27" text-anchor="middle" class="title">ponds</text>
+    <circle class="key" cx="24" cy="63" r="8"/><text class="keyText" x="24" y="67" text-anchor="middle">K</text>
+    <text class="field" x="45" y="68">id</text><text class="type" x="188" y="68">BIGINT</text><text class="pkfk" x="270" y="68">PK</text>
+    <text class="field" x="45" y="94">name</text><text class="type" x="188" y="94">VARCHAR(150)</text>
+    <text class="field" x="45" y="120">location</text><text class="type" x="188" y="120">VARCHAR(255)</text>
+    <text class="field" x="45" y="146">area_square_meters</text><text class="type" x="188" y="146">DOUBLE</text>
+    <text class="field" x="45" y="172">species_type</text><text class="type" x="188" y="172">VARCHAR(100)</text>
+    <text class="field" x="45" y="198">status</text><text class="type" x="188" y="198">VARCHAR(30)</text>
+    <text class="field" x="45" y="224">created_at</text><text class="type" x="188" y="224">TIMESTAMP</text>
+  </g>
+
+  <!-- users -->
+  <g id="users" transform="translate(50,675)">
+    <rect class="table" width="310" height="245" rx="8"/>
+    <rect class="head" width="310" height="42" rx="8"/>
+    <text x="155" y="27" text-anchor="middle" class="title">users</text>
+    <circle class="key" cx="24" cy="63" r="8"/><text class="keyText" x="24" y="67" text-anchor="middle">K</text>
+    <text class="field" x="45" y="68">id</text><text class="type" x="188" y="68">BIGINT</text><text class="pkfk" x="270" y="68">PK</text>
+    <text class="field" x="45" y="94">username</text><text class="type" x="188" y="94">VARCHAR(100)</text>
+    <text class="field" x="45" y="120">full_name</text><text class="type" x="188" y="120">VARCHAR(150)</text>
+    <text class="field" x="45" y="146">password_hash</text><text class="type" x="188" y="146">VARCHAR(255)</text>
+    <text class="field" x="45" y="172">role</text><text class="type" x="188" y="172">VARCHAR(30)</text>
+    <text class="field" x="45" y="198">active</text><text class="type" x="188" y="198">BOOLEAN</text>
+    <text class="field" x="45" y="224">created_at</text><text class="type" x="188" y="224">TIMESTAMP</text>
+  </g>
+
+  <!-- user_pond_access -->
+  <g id="user_pond_access" transform="translate(50,410)">
+    <rect class="table" width="310" height="190" rx="8"/>
+    <rect class="head" width="310" height="42" rx="8"/>
+    <text x="155" y="27" text-anchor="middle" class="title">user_pond_access</text>
+    <circle class="key" cx="24" cy="63" r="8"/><text class="keyText" x="24" y="67" text-anchor="middle">K</text>
+    <text class="field" x="45" y="68">id</text><text class="type" x="188" y="68">BIGINT</text><text class="pkfk" x="270" y="68">PK</text>
+    <text class="field" x="45" y="94">user_id</text><text class="type" x="188" y="94">BIGINT</text><text class="pkfk" x="270" y="94">FK</text>
+    <text class="field" x="45" y="120">pond_id</text><text class="type" x="188" y="120">BIGINT</text><text class="pkfk" x="270" y="120">FK</text>
+    <text class="field" x="45" y="146">access_type</text><text class="type" x="188" y="146">VARCHAR(30)</text>
+    <text class="field" x="45" y="172">created_at</text><text class="type" x="188" y="172">TIMESTAMP</text>
+  </g>
+
+  <!-- devices -->
+  <g id="devices" transform="translate(560,95)">
+    <rect class="table" width="350" height="330" rx="8"/>
+    <rect class="head" width="350" height="42" rx="8"/>
+    <text x="175" y="27" text-anchor="middle" class="title">devices</text>
+    <circle class="key" cx="24" cy="63" r="8"/><text class="keyText" x="24" y="67" text-anchor="middle">K</text>
+    <text class="field" x="45" y="68">id</text><text class="type" x="215" y="68">BIGINT</text><text class="pkfk" x="307" y="68">PK</text>
+    <text class="field" x="45" y="94">device_id</text><text class="type" x="215" y="94">VARCHAR(100)</text><text class="pkfk" x="292" y="94">UQ</text>
+    <text class="field" x="45" y="120">name</text><text class="type" x="215" y="120">VARCHAR(150)</text>
+    <text class="field" x="45" y="146">pond_id</text><text class="type" x="215" y="146">BIGINT</text><text class="pkfk" x="307" y="146">FK</text>
+    <text class="field" x="45" y="172">status</text><text class="type" x="215" y="172">VARCHAR(30)</text>
+    <text class="field" x="45" y="198">connection_status</text><text class="type" x="215" y="198">VARCHAR(30)</text>
+    <text class="field" x="45" y="224">last_seen_at</text><text class="type" x="215" y="224">TIMESTAMP</text>
+    <text class="field" x="45" y="250">latitude</text><text class="type" x="215" y="250">DOUBLE</text>
+    <text class="field" x="45" y="276">longitude</text><text class="type" x="215" y="276">DOUBLE</text>
+    <text class="field" x="45" y="302">created_at</text><text class="type" x="215" y="302">TIMESTAMP</text>
+  </g>
+
+  <!-- sensor_readings -->
+  <g id="sensor_readings" transform="translate(1260,100)">
+    <rect class="table" width="380" height="330" rx="8"/>
+    <rect class="head" width="380" height="42" rx="8"/>
+    <text x="190" y="27" text-anchor="middle" class="title">sensor_readings</text>
+    <circle class="key" cx="24" cy="63" r="8"/><text class="keyText" x="24" y="67" text-anchor="middle">K</text>
+    <text class="field" x="45" y="68">id</text><text class="type" x="230" y="68">BIGINT</text><text class="pkfk" x="335" y="68">PK</text>
+    <text class="field" x="45" y="94">device_id</text><text class="type" x="230" y="94">VARCHAR(100)</text><text class="pkfk" x="335" y="94">FK</text>
+    <text class="field" x="45" y="120">temperature</text><text class="type" x="230" y="120">DOUBLE</text>
+    <text class="field" x="45" y="146">ph</text><text class="type" x="230" y="146">DOUBLE</text>
+    <text class="field" x="45" y="172">ec_value</text><text class="type" x="230" y="172">DOUBLE</text>
+    <text class="field" x="45" y="198">salinity</text><text class="type" x="230" y="198">DOUBLE</text>
+    <text class="field" x="45" y="224">do_value</text><text class="type" x="230" y="224">DOUBLE</text>
+    <text class="field" x="45" y="250">status</text><text class="type" x="230" y="250">VARCHAR(20)</text>
+    <text class="field" x="45" y="276">final_status</text><text class="type" x="230" y="276">VARCHAR(20)</text>
+    <text class="field" x="45" y="302">created_at</text><text class="type" x="230" y="302">TIMESTAMP</text>
+  </g>
+
+  <!-- alerts -->
+  <g id="alerts" transform="translate(1260,505)">
+    <rect class="table" width="380" height="245" rx="8"/>
+    <rect class="head" width="380" height="42" rx="8"/>
+    <text x="190" y="27" text-anchor="middle" class="title">alerts</text>
+    <circle class="key" cx="24" cy="63" r="8"/><text class="keyText" x="24" y="67" text-anchor="middle">K</text>
+    <text class="field" x="45" y="68">id</text><text class="type" x="230" y="68">BIGINT</text><text class="pkfk" x="335" y="68">PK</text>
+    <text class="field" x="45" y="94">device_id</text><text class="type" x="230" y="94">VARCHAR(100)</text><text class="pkfk" x="335" y="94">FK</text>
+    <text class="field" x="45" y="120">alert_type</text><text class="type" x="230" y="120">VARCHAR(50)</text>
+    <text class="field" x="45" y="146">severity</text><text class="type" x="230" y="146">VARCHAR(20)</text>
+    <text class="field" x="45" y="172">status</text><text class="type" x="230" y="172">VARCHAR(20)</text>
+    <text class="field" x="45" y="198">message</text><text class="type" x="230" y="198">VARCHAR(500)</text>
+    <text class="field" x="45" y="224">created_at</text><text class="type" x="230" y="224">TIMESTAMP</text>
+  </g>
+
+  <!-- device_commands -->
+  <g id="device_commands" transform="translate(540,505)">
+    <rect class="table" width="390" height="300" rx="8"/>
+    <rect class="head" width="390" height="42" rx="8"/>
+    <text x="195" y="27" text-anchor="middle" class="title">device_commands</text>
+    <circle class="key" cx="24" cy="63" r="8"/><text class="keyText" x="24" y="67" text-anchor="middle">K</text>
+    <text class="field" x="45" y="68">id</text><text class="type" x="238" y="68">BIGINT</text><text class="pkfk" x="345" y="68">PK</text>
+    <text class="field" x="45" y="94">device_id</text><text class="type" x="238" y="94">VARCHAR(100)</text><text class="pkfk" x="345" y="94">FK</text>
+    <text class="field" x="45" y="120">relay_no</text><text class="type" x="238" y="120">INT</text>
+    <text class="field" x="45" y="146">action</text><text class="type" x="238" y="146">VARCHAR(10)</text>
+    <text class="field" x="45" y="172">status</text><text class="type" x="238" y="172">VARCHAR(20)</text>
+    <text class="field" x="45" y="198">source</text><text class="type" x="238" y="198">VARCHAR(30)</text>
+    <text class="field" x="45" y="224">requested_by</text><text class="type" x="238" y="224">VARCHAR(100)</text>
+    <text class="field" x="45" y="250">sent_at / ack_at</text><text class="type" x="238" y="250">TIMESTAMP</text>
+    <text class="field" x="45" y="276">expires_at</text><text class="type" x="238" y="276">TIMESTAMP</text>
+  </g>
+
+  <!-- relay_states -->
+  <g id="relay_states" transform="translate(540,855)">
+    <rect class="table" width="390" height="160" rx="8"/>
+    <rect class="head" width="390" height="42" rx="8"/>
+    <text x="195" y="27" text-anchor="middle" class="title">relay_states</text>
+    <circle class="key" cx="24" cy="63" r="8"/><text class="keyText" x="24" y="67" text-anchor="middle">K</text>
+    <text class="field" x="45" y="68">id</text><text class="type" x="238" y="68">BIGINT</text><text class="pkfk" x="345" y="68">PK</text>
+    <text class="field" x="45" y="94">device_id</text><text class="type" x="238" y="94">VARCHAR(100)</text><text class="pkfk" x="345" y="94">FK</text>
+    <text class="field" x="45" y="120">relay_no</text><text class="type" x="238" y="120">INT</text>
+    <text class="field" x="45" y="146">current_state</text><text class="type" x="238" y="146">VARCHAR(10)</text>
+  </g>
+
+  <!-- device_sensors -->
+  <g id="device_sensors" transform="translate(970,805)">
+    <rect class="table" width="300" height="210" rx="8"/>
+    <rect class="head" width="300" height="42" rx="8"/>
+    <text x="150" y="27" text-anchor="middle" class="title">device_sensors</text>
+    <circle class="key" cx="24" cy="63" r="8"/><text class="keyText" x="24" y="67" text-anchor="middle">K</text>
+    <text class="field" x="45" y="68">id</text><text class="type" x="178" y="68">BIGINT</text><text class="pkfk" x="260" y="68">PK</text>
+    <text class="field" x="45" y="94">device_id</text><text class="type" x="178" y="94">BIGINT</text><text class="pkfk" x="260" y="94">FK</text>
+    <text class="field" x="45" y="120">sensor_type</text><text class="type" x="178" y="120">VARCHAR(50)</text>
+    <text class="field" x="45" y="146">name</text><text class="type" x="178" y="146">VARCHAR(150)</text>
+    <text class="field" x="45" y="172">pin</text><text class="type" x="178" y="172">VARCHAR(30)</text>
+    <text class="field" x="45" y="198">status</text><text class="type" x="178" y="198">VARCHAR(30)</text>
+  </g>
+
+  <!-- device_relays -->
+  <g id="device_relays" transform="translate(1300,805)">
+    <rect class="table" width="320" height="210" rx="8"/>
+    <rect class="head" width="320" height="42" rx="8"/>
+    <text x="160" y="27" text-anchor="middle" class="title">device_relays</text>
+    <circle class="key" cx="24" cy="63" r="8"/><text class="keyText" x="24" y="67" text-anchor="middle">K</text>
+    <text class="field" x="45" y="68">id</text><text class="type" x="190" y="68">BIGINT</text><text class="pkfk" x="280" y="68">PK</text>
+    <text class="field" x="45" y="94">device_id</text><text class="type" x="190" y="94">BIGINT</text><text class="pkfk" x="280" y="94">FK</text>
+    <text class="field" x="45" y="120">relay_no</text><text class="type" x="190" y="120">INT</text>
+    <text class="field" x="45" y="146">name</text><text class="type" x="190" y="146">VARCHAR(150)</text>
+    <text class="field" x="45" y="172">status</text><text class="type" x="190" y="172">VARCHAR(30)</text>
+    <text class="field" x="45" y="198">locked</text><text class="type" x="190" y="198">BOOLEAN</text>
+  </g>
+
+  <!-- device_latest_states -->
+  <g id="device_latest_states" transform="translate(970,470)">
+    <rect class="table" width="250" height="200" rx="8"/>
+    <rect class="head" width="250" height="42" rx="8"/>
+    <text x="125" y="27" text-anchor="middle" class="title" style="font-size:18px">device_latest_states</text>
+    <circle class="key" cx="24" cy="63" r="8"/><text class="keyText" x="24" y="67" text-anchor="middle">K</text>
+    <text class="field" x="45" y="68">device_id</text><text class="type" x="152" y="68">VARCHAR</text><text class="pkfk" x="214" y="68">PK</text>
+    <text class="field" x="45" y="94">latest_reading_id</text><text class="type" x="152" y="94">BIGINT</text>
+    <text class="field" x="45" y="120">temperature</text><text class="type" x="152" y="120">DOUBLE</text>
+    <text class="field" x="45" y="146">status</text><text class="type" x="152" y="146">VARCHAR</text>
+    <text class="field" x="45" y="172">updated_at</text><text class="type" x="152" y="172">TIMESTAMP</text>
+  </g>
+
+  <!-- Relationships -->
+  <!-- ponds to devices -->
+  <path class="rel" d="M 360 205 H 560" marker-end="url(#crow)"/>
+  <text class="cardLabel" x="380" y="195">1</text><text class="cardLabel" x="535" y="195">N</text>
+
+  <!-- ponds/users to user_pond_access -->
+  <path class="rel" d="M 205 350 V 410" marker-end="url(#crow)"/>
+  <text class="cardLabel" x="218" y="372">1</text><text class="cardLabel" x="218" y="400">N</text>
+  <path class="rel" d="M 205 675 V 600" marker-end="url(#crow)"/>
+  <text class="cardLabel" x="218" y="660">1</text><text class="cardLabel" x="218" y="620">N</text>
+
+  <!-- devices to sensor_readings -->
+  <path class="rel" d="M 910 205 H 1260" marker-end="url(#crow)"/>
+  <text class="cardLabel" x="930" y="195">1</text><text class="cardLabel" x="1235" y="195">N</text>
+
+  <!-- devices to alerts -->
+  <path class="rel" d="M 910 330 H 1040 V 625 H 1260" marker-end="url(#crow)"/>
+  <text class="cardLabel" x="928" y="320">1</text><text class="cardLabel" x="1235" y="615">N</text>
+
+  <!-- devices to commands -->
+  <path class="rel" d="M 735 425 V 505" marker-end="url(#crow)"/>
+  <text class="cardLabel" x="748" y="448">1</text><text class="cardLabel" x="748" y="493">N</text>
+
+  <!-- commands to relay_states -->
+  <path class="rel" d="M 735 805 V 855" marker-end="url(#crow)"/>
+  <text class="cardLabel" x="748" y="827">1</text><text class="cardLabel" x="748" y="846">N</text>
+
+  <!-- devices to relay_states -->
+  <path class="rel" d="M 560 360 H 500 V 935 H 540" marker-end="url(#crow)"/>
+  <text class="cardLabel" x="525" y="350">1</text><text class="cardLabel" x="516" y="925">N</text>
+
+  <!-- devices to latest state -->
+  <path class="rel" d="M 910 395 H 940 V 570 H 970" marker-end="url(#crow)"/>
+  <text class="cardLabel" x="928" y="385">1</text><text class="cardLabel" x="945" y="560">1</text>
+
+  <!-- sensor_readings to latest state -->
+  <path class="rel" d="M 1260 395 H 1210 V 505" marker-end="url(#crow)"/>
+  <text class="cardLabel" x="1235" y="385">1</text><text class="cardLabel" x="1222" y="495">1</text>
+
+  <!-- devices to device_sensors -->
+  <path class="rel" d="M 875 425 V 910 H 970" marker-end="url(#crow)"/>
+  <text class="cardLabel" x="888" y="448">1</text><text class="cardLabel" x="945" y="900">N</text>
+
+  <!-- devices to device_relays -->
+  <path class="rel" d="M 910 375 H 1150 V 910 H 1300" marker-end="url(#crow)"/>
+  <text class="cardLabel" x="928" y="365">1</text><text class="cardLabel" x="1275" y="900">N</text>
+
+  <text x="50" y="1018" class="small">Generated from JPA model classes in src/main/java/com/example/shrimpiot/model. Use Insert &gt; Pictures in Word to insert this SVG.</text>
+</svg>

@@ -11,7 +11,7 @@ curl http://localhost:8080/api/health
 ```bash
 curl -X POST http://localhost:8080/api/readings \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: MY_SECRET_KEY" \
+  -H "X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY" \
   -d '{
     "deviceId": "device_01",
     "temperature": 28.5,
@@ -50,5 +50,5 @@ curl -X POST http://localhost:8080/api/commands \
 
 ```bash
 curl "http://localhost:8080/api/commands/pending?deviceId=device_01" \
-  -H "X-API-Key: MY_SECRET_KEY"
+  -H "X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY"
 ```

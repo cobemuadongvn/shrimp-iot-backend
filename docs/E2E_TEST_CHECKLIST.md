@@ -8,10 +8,10 @@ Mục tiêu: chứng minh hệ thống chạy được trọn luồng từ cảm
 Backend IP: http://192.168.1.8:8080
 API base:   http://192.168.1.8:8080/api
 Device ID:  device_01
-Admin:      admin / admin123
-User:       user / user123
-Tech:       tech / tech123
-API key:    MY_SECRET_KEY
+Admin:      admin / REPLACE_WITH_LOCAL_ADMIN_PASSWORD
+User:       user / REPLACE_WITH_LOCAL_USER_PASSWORD
+Tech:       tech / REPLACE_WITH_LOCAL_TECH_PASSWORD
+API key:    REPLACE_WITH_LOCAL_IOT_API_KEY
 Auto-control mặc định: OFF
 ```
 
@@ -42,7 +42,7 @@ Body:
 ```json
 {
   "username": "admin",
-  "password": "admin123"
+  "password": "REPLACE_WITH_LOCAL_ADMIN_PASSWORD"
 }
 ```
 
@@ -60,7 +60,7 @@ user.role = ADMIN
 
 ```http
 POST /api/readings
-X-API-Key: MY_SECRET_KEY
+X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY
 ```
 
 Body bình thường:
@@ -183,7 +183,7 @@ Arduino/giả lập Arduino lấy lệnh:
 
 ```http
 GET /api/commands/pending?deviceId=device_01
-X-API-Key: MY_SECRET_KEY
+X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY
 ```
 
 Kỳ vọng:
@@ -197,7 +197,7 @@ ACK:
 
 ```http
 POST /api/commands/{id}/ack
-X-API-Key: MY_SECRET_KEY
+X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY
 ```
 
 Body:
@@ -362,7 +362,7 @@ active = true
 
 ## 10. Test phân quyền USER / TECHNICIAN
 
-### USER `user / user123`
+### USER `user / REPLACE_WITH_LOCAL_USER_PASSWORD`
 
 Kỳ vọng:
 
@@ -373,7 +373,7 @@ Kỳ vọng:
 - Không xem được thiết bị/ao không được gán.
 ```
 
-### TECHNICIAN `tech / tech123`
+### TECHNICIAN `tech / REPLACE_WITH_LOCAL_TECH_PASSWORD`
 
 Kỳ vọng:
 

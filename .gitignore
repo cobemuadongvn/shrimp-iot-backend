@@ -5,3 +5,19 @@ target/
 *.log
 .DS_Store
 .env
+.env.local
+.env.*.local
+
+# Local secrets
+.streamlit/secrets.toml
+arduino/**/arduino_secrets.h
+
+# Local backups and runtime state
+*.zip
+backups/
+mosquitto/data/
+mosquitto/log/
+**/__pycache__/
+*.pyc
+*.out.log
+*.err.log

@@ -4,7 +4,7 @@
 
 ```powershell
 $base = "http://localhost:8080"
-$loginBody = '{"username":"admin","password":"admin123"}'
+$loginBody = '{"username":"admin","password":"REPLACE_WITH_LOCAL_ADMIN_PASSWORD"}'
 $login = Invoke-RestMethod -Uri "$base/api/auth/login" -Method POST -ContentType "application/json" -Body $loginBody
 $token = $login.data.token
 $headers = @{ Authorization = "Bearer $token" }

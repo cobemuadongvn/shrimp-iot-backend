@@ -1,0 +1,81 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - name: Test Spring Boot backend
+        run: mvn -B -ntp test
+
+  ai-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ai-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: ai-service/requirements.txt
+      - name: Install AI dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Compile and load every AI model
+        run: |
+          python -m compileall -q .
+          python -c "import app; h=app.health(); assert h['status']=='UP'; assert all(h['models'].values()), h"
+
+  blueprint-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Parse Render Blueprint
+        run: |
+          python -m pip install pyyaml
+          python -c "import yaml; d=yaml.safe_load(open('render.yaml', encoding='utf-8')); assert len(d['services'])==2"
+
+  docker-build:
+    needs: [backend-test, ai-test, blueprint-check]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - image: backend
+            context: .
+            dockerfile: ./Dockerfile
+          - image: ai
+            context: ./ai-service
+            dockerfile: ./ai-service/Dockerfile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          push: false
+          tags: shrimp-iot-${{ matrix.image }}:ci
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}

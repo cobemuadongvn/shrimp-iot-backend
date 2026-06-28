@@ -10,9 +10,9 @@ Backend đã bổ sung 3 role:
 
 | Username | Password | Role |
 |---|---|---|
-| admin | admin123 | ADMIN |
-| user | user123 | USER |
-| tech | tech123 | TECHNICIAN |
+| admin | REPLACE_WITH_LOCAL_ADMIN_PASSWORD | ADMIN |
+| user | REPLACE_WITH_LOCAL_USER_PASSWORD | USER |
+| tech | REPLACE_WITH_LOCAL_TECH_PASSWORD | TECHNICIAN |
 
 ## API công khai
 

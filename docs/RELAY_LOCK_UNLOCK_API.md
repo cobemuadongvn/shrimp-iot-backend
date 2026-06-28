@@ -17,7 +17,7 @@ Authorization: Bearer <TOKEN>
 Ví dụ:
 
 ```http
-GET http://192.168.1.89:8080/api/devices/device_01/relays
+GET http://175.16.16.108:8080/api/devices/device_01/relays
 Authorization: Bearer <TOKEN>
 ```
 
@@ -44,7 +44,7 @@ Authorization: Bearer <TOKEN>
 Ví dụ khóa bơm 1:
 
 ```http
-PATCH http://192.168.1.89:8080/api/devices/device_01/relays/1/lock
+PATCH http://175.16.16.108:8080/api/devices/device_01/relays/1/lock
 Authorization: Bearer <TOKEN>
 ```
 
@@ -60,7 +60,7 @@ Authorization: Bearer <TOKEN>
 Ví dụ mở khóa bơm 1:
 
 ```http
-PATCH http://192.168.1.89:8080/api/devices/device_01/relays/1/unlock
+PATCH http://175.16.16.108:8080/api/devices/device_01/relays/1/unlock
 Authorization: Bearer <TOKEN>
 ```
 

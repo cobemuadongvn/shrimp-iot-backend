@@ -21,7 +21,7 @@ services:
     restart: "no"
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@example.com}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin123}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-REPLACE_WITH_LOCAL_ADMIN_PASSWORD}
     ports:
       - "5050:80"
     depends_on:

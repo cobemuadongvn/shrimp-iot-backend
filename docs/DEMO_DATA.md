@@ -6,10 +6,10 @@ Backend tự tạo dữ liệu ban đầu bằng `DataInitializer` khi database 
 
 | Username | Password | Role | Ghi chú |
 |---|---|---|---|
-| admin | admin123 | ADMIN | Quản trị hệ thống |
-| user | user123 | USER | Chủ ao nuôi A |
-| user2 | user123 | USER | Chủ ao nuôi B |
-| tech | tech123 | TECHNICIAN | Kỹ thuật viên |
+| admin | REPLACE_WITH_LOCAL_ADMIN_PASSWORD | ADMIN | Quản trị hệ thống |
+| user | REPLACE_WITH_LOCAL_USER_PASSWORD | USER | Chủ ao nuôi A |
+| user2 | REPLACE_WITH_LOCAL_USER_PASSWORD | USER | Chủ ao nuôi B |
+| tech | REPLACE_WITH_LOCAL_TECH_PASSWORD | TECHNICIAN | Kỹ thuật viên |
 
 ## Ao nuôi mặc định
 

@@ -5,9 +5,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "mqtt")
 public class MqttProperties {
     private boolean enabled = true;
-    private String brokerUrl = "tcp://192.168.1.89:1883";
+    private String brokerUrl = "tcp://175.16.16.108:1883";
     private String username = "";
     private String password = "";
+    private boolean tlsRequired = false;
+    private boolean hostnameVerificationEnabled = true;
+    private boolean credentialsRequired = false;
     private String backendClientId = "shrimp-iot-backend";
     private int qos = 1;
     private String telemetryTopicPattern = "shrimp-iot/devices/+/telemetry";
@@ -27,6 +30,19 @@ public class MqttProperties {
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+
+    public boolean isTlsRequired() { return tlsRequired; }
+    public void setTlsRequired(boolean tlsRequired) { this.tlsRequired = tlsRequired; }
+
+    public boolean isHostnameVerificationEnabled() { return hostnameVerificationEnabled; }
+    public void setHostnameVerificationEnabled(boolean hostnameVerificationEnabled) {
+        this.hostnameVerificationEnabled = hostnameVerificationEnabled;
+    }
+
+    public boolean isCredentialsRequired() { return credentialsRequired; }
+    public void setCredentialsRequired(boolean credentialsRequired) {
+        this.credentialsRequired = credentialsRequired;
+    }
 
     public String getBackendClientId() { return backendClientId; }
     public void setBackendClientId(String backendClientId) { this.backendClientId = backendClientId; }

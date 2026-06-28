@@ -24,7 +24,7 @@ Mở sơ đồ kiến trúc hoặc dashboard.
 Thao tác:
 
 ```text
-Đăng nhập admin / admin123
+Đăng nhập admin / REPLACE_WITH_LOCAL_ADMIN_PASSWORD
 Mở trang quản lý user
 Hiển thị USER / TECHNICIAN / trạng thái active / approvalStatus
 ```

@@ -1,6 +1,7 @@
 package com.example.shrimpiot.service;
 
 import com.example.shrimpiot.config.MqttProperties;
+import com.example.shrimpiot.config.MqttConnectionOptionsFactory;
 import com.example.shrimpiot.model.DeviceCommand;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -52,20 +53,7 @@ public class MqttCommandPublisher {
                 + "-pub-"
                 + UUID.randomUUID().toString().substring(0, 8);
 
-        MqttConnectOptions options = new MqttConnectOptions();
-        options.setServerURIs(new String[]{mqttProperties.getBrokerUrl()});
-        options.setCleanSession(true);
-        options.setConnectionTimeout(10);
-        options.setKeepAliveInterval(30);
-        options.setAutomaticReconnect(false);
-
-        if (mqttProperties.getUsername() != null && !mqttProperties.getUsername().isBlank()) {
-            options.setUserName(mqttProperties.getUsername());
-        }
-
-        if (mqttProperties.getPassword() != null && !mqttProperties.getPassword().isBlank()) {
-            options.setPassword(mqttProperties.getPassword().toCharArray());
-        }
+        MqttConnectOptions options = MqttConnectionOptionsFactory.create(mqttProperties, false);
 
         MqttClient client = new MqttClient(mqttProperties.getBrokerUrl(), clientId, new MemoryPersistence());
         try {

@@ -63,7 +63,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"REPLACE_WITH_LOCAL_ADMIN_PASSWORD\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -110,7 +110,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"user\",\n  \"password\": \"user123\"\n}",
+              "raw": "{\n  \"username\": \"user\",\n  \"password\": \"REPLACE_WITH_LOCAL_USER_PASSWORD\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -154,7 +154,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"username\": \"tech\",\n  \"password\": \"tech123\"\n}",
+              "raw": "{\n  \"username\": \"tech\",\n  \"password\": \"REPLACE_WITH_LOCAL_TECH_PASSWORD\"\n}",
               "options": {
                 "raw": {
                   "language": "json"

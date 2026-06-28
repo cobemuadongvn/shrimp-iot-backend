@@ -1,0 +1,1 @@
+shrimp-iot://provision?v=1&deviceId=device_01&claimCode=SAMPLE-CLAIM-CODE-NOT-VALID-0001&setupSsid=ShrimpIoT-device_01&setupPassword=SAMPLE-SETUP-NOT-VALID-0001

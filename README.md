@@ -111,7 +111,7 @@ curl http://localhost:8080/api/health
 ```http
 POST /api/readings
 Content-Type: application/json
-X-API-Key: MY_SECRET_KEY
+X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY
 ```
 
 Body:
@@ -132,7 +132,7 @@ Test bằng curl:
 ```bash
 curl -X POST http://localhost:8080/api/readings \
   -H "Content-Type: application/json" \
-  -H "X-API-Key: MY_SECRET_KEY" \
+  -H "X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY" \
   -d '{
     "deviceId": "device_01",
     "temperature": 28.5,
@@ -196,14 +196,14 @@ Body:
 
 ```http
 GET /api/commands/pending?deviceId=device_01
-X-API-Key: MY_SECRET_KEY
+X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY
 ```
 
 ### Arduino xác nhận đã thực hiện lệnh
 
 ```http
 POST /api/commands/{id}/ack
-X-API-Key: MY_SECRET_KEY
+X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY
 Content-Type: application/json
 ```
 
@@ -248,7 +248,7 @@ Trong code Arduino, nếu backend chạy local qua ngrok hoặc server online, c
 const char SERVER_HOST[] = "your-domain.com";
 const int SERVER_PORT = 80;
 const char API_PATH[] = "/api/readings";
-const char API_KEY[] = "MY_SECRET_KEY";
+const char API_KEY[] = "REPLACE_WITH_LOCAL_IOT_API_KEY";
 ```
 
 Nếu gọi HTTPS thì dùng `WiFiSSLClient` và port `443`.

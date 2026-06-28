@@ -1,0 +1,55 @@
+{
+  "info": {
+    "name": "Shrimp IoT - Local Chip Provisioning v1",
+    "description": "Local AP API contract. Never commit real setupCode or Wi-Fi credentials.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "chipBaseUrl", "value": "http://192.168.4.1"},
+    {"key": "setupCode", "value": "REPLACE_WITH_LOCAL_SETUP_CODE", "type": "secret"},
+    {"key": "wifiSsid", "value": "REPLACE_WITH_TEST_WIFI_SSID"},
+    {"key": "wifiPassword", "value": "REPLACE_WITH_TEST_WIFI_PASSWORD", "type": "secret"}
+  ],
+  "item": [
+    {
+      "name": "Get provisioning status",
+      "request": {
+        "method": "GET",
+        "url": "{{chipBaseUrl}}/v1/provision/status"
+      }
+    },
+    {
+      "name": "List nearby networks",
+      "request": {
+        "method": "GET",
+        "header": [{"key": "X-Setup-Code", "value": "{{setupCode}}", "type": "text"}],
+        "url": "{{chipBaseUrl}}/v1/provision/networks"
+      }
+    },
+    {
+      "name": "Apply Wi-Fi credentials",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json", "type": "text"},
+          {"key": "X-Setup-Code", "value": "{{setupCode}}", "type": "text"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"ssid\": \"{{wifiSsid}}\",\n  \"password\": \"{{wifiPassword}}\"\n}",
+          "options": {"raw": {"language": "json"}}
+        },
+        "url": "{{chipBaseUrl}}/v1/provision/wifi"
+      }
+    },
+    {
+      "name": "Clear saved Wi-Fi - destructive",
+      "request": {
+        "method": "DELETE",
+        "header": [{"key": "X-Setup-Code", "value": "{{setupCode}}", "type": "text"}],
+        "url": "{{chipBaseUrl}}/v1/provision/wifi",
+        "description": "Clears EEPROM Wi-Fi configuration. Run only during an intentional reset test."
+      }
+    }
+  ]
+}
