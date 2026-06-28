@@ -4,8 +4,9 @@ services:
   - type: web
     name: shrimp-iot-backend
     runtime: docker
-    # MQTT subscriber must stay online continuously; Free web services can spin down.
-    plan: starter
+    # Temporary user choice to avoid payment setup during initial deployment.
+    # For MQTT-heavy 24/7 usage, Free can spin down and miss telemetry.
+    plan: free
     region: singapore
     dockerfilePath: ./Dockerfile
     dockerContext: .

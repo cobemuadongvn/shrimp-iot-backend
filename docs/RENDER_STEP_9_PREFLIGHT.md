@@ -41,3 +41,5 @@ Trang thai hien tai: dang chuan bi deploy Render, chua tao service that.
 
 - Tren may nay khong goi duoc lenh `mvn` global, nen minh dua vao ket qua surefire vua tao trong `target/` va CI workflow da commit san de xac nhan phan test.
 - Buoc tao service that co the phat sinh chi phi, nen can nguoi dung thao tac tai khoan Render khi toi doan nay.
+- Sau khi Render yeu cau payment info, backend plan da duoc ha tam xuong `Free` theo quyet dinh cua nguoi dung de tiep tuc deploy khong can the.
+- Rui ro da biet: backend Free co the spin down, khong phu hop cho MQTT subscriber 24/7 neu can nhan telemetry lien tuc.

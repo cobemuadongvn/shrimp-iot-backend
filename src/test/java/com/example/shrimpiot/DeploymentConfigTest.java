@@ -34,7 +34,7 @@ class DeploymentConfigTest {
 
         assertDockerWebService(backend, "/api/health/ready");
         assertDockerWebService(ai, "/health");
-        assertEquals("starter", backend.get("plan"));
+        assertEquals("free", backend.get("plan"));
         assertEquals("free", ai.get("plan"));
         assertEquals("checksPass", backend.get("autoDeployTrigger"));
         assertEquals("checksPass", ai.get("autoDeployTrigger"));
