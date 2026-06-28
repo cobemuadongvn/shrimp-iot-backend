@@ -40,7 +40,7 @@ iot:
 
 app:
   cors:
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173,http://175.16.16.108:3000,http://175.16.16.108:5173,http://192.168.1.*:3000,http://192.168.1.*:5173}
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173,http://175.16.16.108:3000,http://175.16.16.108:5173,http://192.168.1.*:3000,http://192.168.1.*:5173,https://aiot-web-eosin.vercel.app}
 
 threshold:
   # QCVN 02-19:2014/BNNPTNT - Phụ lục 1, Bảng 1
