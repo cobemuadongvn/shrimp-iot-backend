@@ -23,6 +23,6 @@ ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError"
 
 EXPOSE 10000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=45s --retries=3 \
-    CMD-SHELL wget -qO- "http://127.0.0.1:${PORT:-8080}/api/health/ready" >/dev/null || exit 1
+    CMD wget -qO- "http://127.0.0.1:${PORT:-8080}/api/health/ready" >/dev/null || exit 1
 
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
