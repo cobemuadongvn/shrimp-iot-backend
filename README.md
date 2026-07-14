@@ -1,98 +1,115 @@
-# Shrimp IoT Backend - Spring Boot + PostgreSQL
+# Shrimp IoT Backend
 
-Backend cho đề tài:
+Backend Spring Boot cho hệ thống giám sát và điều khiển môi trường ao nuôi tôm. Dự án nhận dữ liệu cảm biến từ thiết bị IoT, lưu PostgreSQL, phát sự kiện realtime cho dashboard, cảnh báo khi vượt ngưỡng và hỗ trợ điều khiển relay qua MQTT hoặc HTTP fallback.
 
-**IOT – Hệ thống giám sát môi trường ao nuôi thủy hải sản**
-
-## Kiến trúc
+## Tổng quan
 
 ```text
 Arduino UNO R4 WiFi
-→ HTTP POST JSON
-→ Spring Boot REST API
-→ PostgreSQL Docker
-→ ReactJS Dashboard
+  -> MQTT Broker / HTTP fallback
+  -> Spring Boot REST API
+  -> PostgreSQL + Flyway
+  -> Web/App Dashboard + WebSocket
+  -> AI service tùy chọn
 ```
+
+Các nhóm chức năng chính:
+
+- Thu thập chỉ số môi trường: nhiệt độ, pH, EC, độ mặn, DO.
+- Quản lý ao, thiết bị, cảm biến, relay và quyền truy cập theo vai trò.
+- Xác thực tài khoản bằng token `Bearer`, phê duyệt người dùng mới.
+- Cảnh báo, thông báo in-app, lịch sử lệnh điều khiển và báo cáo CSV.
+- Điều khiển relay thủ công hoặc theo kịch bản; hỗ trợ MQTT command retry.
+- Phát trạng thái mới qua WebSocket/STOMP cho dashboard realtime.
+- Tích hợp AI service và chatbot tùy chọn.
 
 ## Công nghệ
 
-- Java 17
-- Spring Boot
-- Spring Web
-- Spring Data JPA / Hibernate
-- PostgreSQL
+- Java 21
+- Spring Boot 4
+- Spring Web, Spring Data JPA, Validation
+- PostgreSQL 16, Flyway
 - Docker Compose
-- ReactJS frontend gọi API
+- MQTT với Eclipse Mosquitto và Spring Integration MQTT
+- WebSocket/STOMP
+- Python AI service và Streamlit dashboard tùy chọn
 
----
+## Cấu trúc thư mục
 
-## 1. Chạy PostgreSQL bằng Docker
+```text
+src/main/java/com/example/shrimpiot  Spring Boot source code
+src/main/resources                  application.yml, Flyway migrations
+ai-service                          FastAPI AI prediction service
+streamlit-dashboard                 Dashboard demo bằng Streamlit
+arduino                             Sketch Arduino/device
+docs                                Tài liệu handoff và ghi chú kỹ thuật
+mosquitto                           Cấu hình MQTT broker local
+postman                             Collection/test request nếu có
+```
 
-Trong thư mục project, chạy:
+## Yêu cầu môi trường
+
+- JDK 21
+- Maven 3.9+
+- Docker Desktop hoặc Docker Engine có Compose
+- Git
+- Python 3.10+ nếu chạy `ai-service` hoặc `streamlit-dashboard`
+
+Kiểm tra nhanh:
+
+```bash
+java -version
+mvn -version
+docker compose version
+```
+
+## Cấu hình local
+
+Ứng dụng đọc cấu hình từ biến môi trường và tự import `.env.local` nếu file tồn tại.
+
+Tạo file cấu hình local:
+
+```powershell
+Copy-Item .env.example .env.local
+```
+
+Trên Linux/macOS:
+
+```bash
+cp .env.example .env.local
+```
+
+Các biến quan trọng cần kiểm tra trong `.env.local`:
+
+```properties
+SERVER_PORT=8080
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=shrimp_iot
+DB_USER=shrimp_user
+DB_PASSWORD=change_me_dev_password
+IOT_API_KEY=replace_with_a_long_random_device_api_key
+MQTT_ENABLED=true
+MQTT_BROKER_URL=tcp://127.0.0.1:1883
+```
+
+Không commit `.env.local` hoặc bất kỳ file nào chứa mật khẩu/API key thật.
+
+## Chạy local
+
+Khởi động PostgreSQL, pgAdmin và Mosquitto:
 
 ```bash
 docker compose up -d
 ```
 
-Kiểm tra container:
-
-```bash
-docker ps
-```
-
-Thông tin PostgreSQL mặc định:
-
-```text
-Host: localhost
-Port: 5432
-Database: shrimp_iot
-User: shrimp_user
-Password: 123456
-```
-
-PgAdmin:
-
-```text
-URL: http://localhost:5050
-Email: admin@shrimp-iot.local
-Password: 123456
-```
-
-Khi vào PgAdmin, thêm server:
-
-```text
-Host name/address: postgres
-Port: 5432
-Maintenance database: shrimp_iot
-Username: shrimp_user
-Password: 123456
-```
-
-Nếu dùng công cụ ngoài Docker như DBeaver/TablePlus, kết nối bằng:
-
-```text
-Host: localhost
-Port: 5432
-Database: shrimp_iot
-Username: shrimp_user
-Password: 123456
-```
-
----
-
-## 2. Chạy backend
+Chạy backend:
 
 ```bash
 mvn spring-boot:run
 ```
 
-Hoặc Windows:
-
-```bash
-mvnw.cmd spring-boot:run
-```
-
-Backend mặc định chạy ở:
+Backend mặc định chạy tại:
 
 ```text
 http://localhost:8080
@@ -102,19 +119,108 @@ Health check:
 
 ```bash
 curl http://localhost:8080/api/health
+curl http://localhost:8080/api/health/ready
 ```
 
----
+pgAdmin local:
 
-## 3. API Arduino gửi dữ liệu
+```text
+URL: http://localhost:5050
+Email: giá trị PGADMIN_DEFAULT_EMAIL trong .env.local
+Password: giá trị PGADMIN_DEFAULT_PASSWORD trong .env.local
+```
+
+Khi thêm server PostgreSQL trong pgAdmin:
+
+```text
+Host name/address: postgres
+Port: 5432
+Maintenance database: shrimp_iot
+Username: shrimp_user
+Password: giá trị DB_PASSWORD trong .env.local
+```
+
+Nếu dùng DBeaver/TablePlus từ máy host:
+
+```text
+Host: localhost
+Port: 5432
+Database: shrimp_iot
+Username: shrimp_user
+Password: giá trị DB_PASSWORD trong .env.local
+```
+
+## Seed dữ liệu demo
+
+Mặc định repo không tự tạo tài khoản demo để tránh lộ mật khẩu. Nếu cần dữ liệu mẫu khi phát triển local, bật trong `.env.local`:
+
+```properties
+SEED_DEMO_DATA_ENABLED=true
+SEED_ADMIN_PASSWORD=your_admin_password
+SEED_USER_PASSWORD=your_user_password
+SEED_TECH_PASSWORD=your_technician_password
+```
+
+Sau đó restart backend. Các username demo được tạo theo cấu hình `DataInitializer`: `admin`, `user`, `tech`.
+
+## Xác thực
+
+Thiết bị IoT dùng header `X-API-Key` với giá trị `IOT_API_KEY`.
+
+Web/App dùng token từ API đăng nhập:
+
+```http
+POST /api/auth/login
+Content-Type: application/json
+```
+
+```json
+{
+  "username": "admin",
+  "password": "your_admin_password"
+}
+```
+
+Các API dành cho Web/App cần gửi:
+
+```http
+Authorization: Bearer <token>
+```
+
+Đăng ký tài khoản mới:
+
+```http
+POST /api/auth/register
+Content-Type: application/json
+```
+
+```json
+{
+  "username": "pond01",
+  "password": "strong_password",
+  "fullName": "Chủ ao 01",
+  "phone": "0987654321",
+  "email": "pond01@example.com"
+}
+```
+
+Admin duyệt hoặc từ chối người dùng:
+
+```http
+GET /api/users/pending
+POST /api/users/{id}/approve
+POST /api/users/{id}/reject
+```
+
+## API thiết bị
+
+Gửi dữ liệu cảm biến qua HTTP fallback:
 
 ```http
 POST /api/readings
 Content-Type: application/json
-X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY
+X-API-Key: <IOT_API_KEY>
 ```
-
-Body:
 
 ```json
 {
@@ -127,62 +233,70 @@ Body:
 }
 ```
 
-Test bằng curl:
-
-```bash
-curl -X POST http://localhost:8080/api/readings \
-  -H "Content-Type: application/json" \
-  -H "X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY" \
-  -d '{
-    "deviceId": "device_01",
-    "temperature": 28.5,
-    "ph": 7.2,
-    "ecValue": 1.8,
-    "salinity": 12.8,
-    "doValue": 5.6
-  }'
-```
-
----
-
-## 4. API ReactJS gọi dữ liệu
-
-### Lấy dữ liệu mới nhất
+Thiết bị lấy lệnh đang chờ:
 
 ```http
-GET /api/readings/latest?deviceId=device_01
+GET /api/commands/pending?deviceId=device_01
+X-API-Key: <IOT_API_KEY>
 ```
 
-### Lấy lịch sử dữ liệu
+Thiết bị xác nhận lệnh:
 
 ```http
-GET /api/readings/history?deviceId=device_01&limit=50
+POST /api/commands/{id}/ack
+Content-Type: application/json
+X-API-Key: <IOT_API_KEY>
 ```
 
-### Lấy dữ liệu theo khoảng thời gian
+```json
+{
+  "success": true,
+  "message": "Relay updated"
+}
+```
+
+## API Web/App chính
+
+Các endpoint sau cần `Authorization: Bearer <token>`:
 
 ```http
-GET /api/readings/range?deviceId=device_01&from=2026-05-16T00:00:00&to=2026-05-16T23:59:59
+GET    /api/readings/latest?deviceId=device_01
+GET    /api/readings/history?deviceId=device_01&limit=50
+GET    /api/readings/range?deviceId=device_01&from=2026-05-16T00:00:00&to=2026-05-16T23:59:59
+GET    /api/dashboard/summary?deviceId=device_01
+
+POST   /api/commands
+GET    /api/commands/history?deviceId=device_01
+
+GET    /api/alerts/open?deviceId=device_01
+GET    /api/alerts/history?deviceId=device_01
+POST   /api/alerts/{id}/resolve
+
+GET    /api/devices
+GET    /api/devices/{deviceId}
+GET    /api/devices/{deviceId}/latest-state
+
+GET    /api/notifications/in-app
+PATCH  /api/notifications/in-app/{id}/read
+PATCH  /api/notifications/in-app/read-all
+
+POST   /api/chat/message
+GET    /api/chat/sessions
+GET    /api/chat/sessions/{sessionId}/messages
+
+GET    /api/reports/summary
+GET    /api/reports/sensors.csv
+GET    /api/reports/alerts.csv
+GET    /api/reports/commands.csv
 ```
 
-### Dashboard summary
-
-```http
-GET /api/dashboard/summary?deviceId=device_01
-```
-
----
-
-## 5. API điều khiển relay, phần mở rộng
-
-### Tạo lệnh điều khiển
+Tạo lệnh relay:
 
 ```http
 POST /api/commands
 Content-Type: application/json
+Authorization: Bearer <token>
 ```
-
-Body:
 
 ```json
 {
@@ -192,101 +306,167 @@ Body:
 }
 ```
 
-### Arduino lấy lệnh đang chờ
+## MQTT
 
-```http
-GET /api/commands/pending?deviceId=device_01
-X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY
+MQTT là luồng chính cho giao tiếp thiết bị khi chạy local hoặc production.
+
+Broker local từ Docker Compose:
+
+```text
+tcp://127.0.0.1:1883
 ```
 
-### Arduino xác nhận đã thực hiện lệnh
+Topic mặc định:
 
-```http
-POST /api/commands/{id}/ack
-X-API-Key: REPLACE_WITH_LOCAL_IOT_API_KEY
-Content-Type: application/json
+```text
+Telemetry: shrimp-iot/devices/{deviceId}/telemetry
+Command:   shrimp-iot/devices/{deviceId}/commands
+ACK:       shrimp-iot/devices/{deviceId}/commands/ack
+Status:    shrimp-iot/devices/{deviceId}/status
 ```
 
-Body:
+Backend subscribe:
+
+```text
+shrimp-iot/devices/+/telemetry
+shrimp-iot/devices/+/commands/ack
+shrimp-iot/devices/+/status
+```
+
+Payload telemetry:
 
 ```json
 {
-  "success": true,
-  "message": "Relay updated"
+  "deviceId": "device_01",
+  "temperature": 28.5,
+  "ph": 7.4,
+  "ecValue": 1.2,
+  "salinity": 12.5,
+  "doValue": 5.8
 }
 ```
 
----
+Xem thêm: `README_MQTT_MIGRATION.md`.
 
-## 6. Kiểm tra dữ liệu trong PostgreSQL
+## WebSocket realtime
 
-Vào container:
+Backend mở STOMP endpoint:
+
+```text
+/ws
+```
+
+Simple broker prefix:
+
+```text
+/topic
+```
+
+Topic realtime:
+
+```text
+/topic/device/{deviceId}/readings
+/topic/device/{deviceId}/relays
+/topic/device/{deviceId}/alerts
+/topic/device/{deviceId}/notifications
+/topic/user/{userId}/notifications
+```
+
+## AI service
+
+AI service là thành phần tùy chọn, nằm trong thư mục `ai-service`.
+
+Chạy service:
+
+```powershell
+cd ai-service
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app:app --host 0.0.0.0 --port 8001
+```
+
+Backend gọi service qua:
+
+```properties
+AI_ENABLED=true
+AI_SERVICE_URL=http://127.0.0.1:8001/predict
+```
+
+Xem thêm: `ai-service/README_COMBINED_AI.md`.
+
+## Streamlit dashboard
+
+Dashboard demo nằm trong `streamlit-dashboard`.
+
+```powershell
+pip install -r streamlit-dashboard/requirements.txt
+python -m streamlit run streamlit-dashboard/app.py --server.port 8501 --runner.magicEnabled false
+```
+
+Xem thêm: `streamlit-dashboard/README.md`.
+
+## Build, test và package
+
+Chạy test:
 
 ```bash
-docker exec -it shrimp-postgres psql -U shrimp_user -d shrimp_iot
+mvn test
 ```
 
-Xem bảng:
+Build jar:
 
-```sql
-\dt
+```bash
+mvn clean package
 ```
 
-Xem dữ liệu cảm biến:
+Build Docker image:
 
-```sql
-SELECT * FROM sensor_readings ORDER BY created_at DESC;
+```bash
+docker build -t shrimp-iot-backend .
 ```
 
----
+## Deploy
 
-## 7. Cấu hình Arduino
+Repo có sẵn `Dockerfile` và `render.yaml` cho Render.
 
-Trong code Arduino, nếu backend chạy local qua ngrok hoặc server online, chỉnh:
+Khi deploy production cần cấu hình tối thiểu:
 
-```cpp
-const char SERVER_HOST[] = "your-domain.com";
-const int SERVER_PORT = 80;
-const char API_PATH[] = "/api/readings";
-const char API_KEY[] = "REPLACE_WITH_LOCAL_IOT_API_KEY";
+```text
+DB_HOST
+DB_PORT
+DB_NAME
+DB_USER
+DB_PASSWORD
+DB_SSLMODE
+IOT_API_KEY
+CORS_ALLOWED_ORIGINS
+MQTT_BROKER_URL
+MQTT_USERNAME
+MQTT_PASSWORD
+AI_SERVICE_URL
 ```
 
-Nếu gọi HTTPS thì dùng `WiFiSSLClient` và port `443`.
+Lưu ý:
 
-## Bản complete đã bổ sung
+- `DB_SSLMODE=require` thường cần cho database cloud.
+- MQTT production nên bật TLS và credential riêng cho broker.
+- Không bật seed demo data trên production.
+- Render Free có thể sleep, không phù hợp nếu cần nhận telemetry 24/7.
 
-- Phân quyền: ADMIN / USER / TECHNICIAN
-- Bảng `alerts` để lưu lịch sử cảnh báo
-- Bảng `notification_logs` để mô phỏng thông báo APP/SMS/EMAIL
-- Backend tự động tạo lệnh relay khi vượt ngưỡng:
-  - DO thấp -> bật relay máy sục oxy
-  - Nhiệt độ cao -> bật relay quạt nước
-- Arduino cần dùng file `shrimp_iot_uno_r4_complete.ino` đi kèm để lấy lệnh và ACK.
+## Tài liệu liên quan
 
-## Bổ sung mới: đăng ký chờ duyệt + chatbot
+- `README_AUTH.md`: phân quyền và luồng tài khoản.
+- `README_MQTT_MIGRATION.md`: MQTT topics và migration notes.
+- `README_OPERATION_MODE_SAMPLING_SALINITY.md`: chế độ vận hành, sampling, salinity control.
+- `README_AI_AUTO_MODE_B_FINAL.md`: chế độ AI auto.
+- `docs/APP_DEVICE_PROVISIONING_HANDOFF.md`: bàn giao provisioning thiết bị.
+- `docs/TECHNICIAN_DEVICE_MANAGEMENT.md`: quản lý thiết bị cho kỹ thuật viên.
+- `docs/BACKEND_ADJUSTMENT_SECURITY_RUNTIME.md`: ghi chú bảo mật/runtime.
 
-Xem chi tiết trong file `README_REGISTER_CHATBOT.md`.
+## Ghi chú phát triển
 
-### API đăng ký
-
-```http
-POST /api/auth/register
-```
-
-### Admin duyệt user
-
-```http
-GET /api/users/pending
-POST /api/users/{id}/approve
-POST /api/users/{id}/reject
-```
-
-### Chatbot
-
-```http
-POST /api/chat/message
-GET /api/chat/sessions
-GET /api/chat/sessions/{sessionId}/messages
-```
-
-Chatbot hiện có Pha 1 hỏi đáp kiến thức cơ bản và Pha 2 đọc dữ liệu hệ thống.
+- Schema database được quản lý bằng Flyway trong `src/main/resources/db/migration`.
+- `spring.jpa.hibernate.ddl-auto` mặc định là `validate`, nên migration phải khớp entity.
+- API key, database password, OpenAI key và MQTT credentials chỉ đặt trong `.env.local` hoặc biến môi trường runtime.
+- Nếu dùng database cũ chưa có Flyway history, cần xử lý baseline một lần rồi đưa `FLYWAY_BASELINE_ON_MIGRATE=false` trở lại.
